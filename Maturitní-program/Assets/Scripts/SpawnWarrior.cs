@@ -5,15 +5,14 @@ using UnityEngine;
 public class SpawnWarrior : MonoBehaviour
 {
     public GameObject Warrior;
-    public Transform Spawn;
+    public Transform SpawnPoint;
 
 
     public void SpawningWarrior()
     {
-        if(true)
-        {
-            Instantiate(Warrior, Spawn.position, Quaternion.identity);
-        }
+        
+            Instantiate(Warrior, SpawnPoint.position, Quaternion.identity);
+        
     }
 
     // Start is called before the first frame update
