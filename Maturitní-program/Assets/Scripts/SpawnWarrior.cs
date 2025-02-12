@@ -10,21 +10,15 @@ public class SpawnWarrior : MonoBehaviour
 
     public void SpawningWarrior()
     {
-        
+        if(GameManager.Instance.PlayerGold > 20)
+        {
             Instantiate(Warrior, SpawnPoint.position, Quaternion.identity);
+            GameManager.Instance.PlayerGold -= 20;
+        }
+            
         
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    
 }
 
