@@ -5,20 +5,52 @@ using UnityEngine;
 public class SpawnWarrior : MonoBehaviour
 {
     public GameObject Warrior;
-    public Transform SpawnPoint;
+    public Transform SpawnPointWa;
+
+    
+    
+
+    private GameManager gm;
+
+    private void Start()
+    {
+        gm = GameManager.Instance;
+    }
+
 
 
     public void SpawningWarrior()
     {
-        if(GameManager.Instance.PlayerGold > 20)
+        if (gm.PlayerGold > 19)
         {
-            Instantiate(Warrior, SpawnPoint.position, Quaternion.identity);
-            GameManager.Instance.PlayerGold -= 20;
+            if (GameManager.Instance.SubtractGold(20))
+
+            {
+            Instantiate(Warrior, SpawnPointWa.position, Quaternion.identity);
+
+
+
+             }
         }
-            
-        
+
+
     }
 
+    //private void OnTriggerEnter2D(Collider2D boxCollider2D)
+    //{
+    //    if (boxCollider2D.gameObject.CompareTag("Enemy"))
+    //    {
+    //         TakeDamage(30);
+    //    }
+    //}
+    //
+    //public void TakeDamage(int damage)
+    //{
+    //    HpWarrior = -damage;
+    //}
+
     
+
+
 }
 
