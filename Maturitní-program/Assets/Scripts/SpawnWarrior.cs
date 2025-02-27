@@ -36,18 +36,7 @@ public class SpawnWarrior : MonoBehaviour
 
     }
 
-    //private void OnTriggerEnter2D(Collider2D boxCollider2D)
-    //{
-    //    if (boxCollider2D.gameObject.CompareTag("Enemy"))
-    //    {
-    //         TakeDamage(30);
-    //    }
-    //}
-    //
-    //public void TakeDamage(int damage)
-    //{
-    //    HpWarrior = -damage;
-    //}
+    
 
     
 

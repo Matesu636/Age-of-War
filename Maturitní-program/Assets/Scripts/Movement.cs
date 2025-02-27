@@ -27,53 +27,60 @@ public class Movement: MonoBehaviour
 
     public void Move()
     {
-    
-        transform.position += Vector3.right * Speed * Time.deltaTime;
-        
+        if(gameObject.CompareTag("Player"))
+        {
+            transform.position += Vector3.right * Speed * Time.deltaTime;
+
+        }
+        if (gameObject.CompareTag("Enemy"))
+        {
+            transform.position += Vector3.left * Speed * Time.deltaTime;
+
+        }
+
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if(collision.gameObject.CompareTag("Enemy"))
+        if(collision.gameObject)
             {
                 CanMove = true;
             }
+        CancelInvoke(nameof(TakeDamage));
     }
 
 
     private void OnCollisionEnter2D(Collision2D boxCollision2D)
     {
-        if (boxCollision2D.gameObject.CompareTag("Enemy"))
+        if (boxCollision2D.gameObject.CompareTag("Enemy") || boxCollision2D.gameObject.CompareTag("Player"))
         {
             CanMove = false;
+            InvokeRepeating(nameof(TakeDamage), 0f, 2f);
         }
 
 
         Debug.Log("Kolize detekována s: " + boxCollision2D.gameObject.name);
-        if (boxCollision2D.gameObject.CompareTag("Enemy"))
+        if (boxCollision2D.gameObject.CompareTag("Enemy") && gameObject.CompareTag("Player") || boxCollision2D.gameObject.CompareTag("Player") && gameObject.CompareTag("Enemy"))
         {
-             TakeDamage();
+
+            TakeDamage();
+            
+
         }
     }
 
 
     public void TakeDamage()
     {
+
         hpWarrior -= damage;
         if (hpWarrior <= 0)
         {
             GameManager.Instance.AddGold(!isPlayerUnit, 30);
             Destroy(gameObject);
         }
+        
     }
 
-    //private void OnTriggerEnter2D(Collider2D other)
-    //{
-    //    Movement enemy = other.GetComponent<Movement>();
-    //    if (enemy != null && enemy.isPlayerUnit != isPlayerUnit)
-    //    {
-    //        enemy.TakeDamage(damage);
-    //        TakeDamage(enemy.damage);
-    //    }
-    //}
+    
 }
