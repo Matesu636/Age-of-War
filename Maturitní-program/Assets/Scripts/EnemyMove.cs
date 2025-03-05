@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Movement: MonoBehaviour
+public class EnemyMove : MonoBehaviour
 {
     BoxCollider2D boxCollider2D;
     public float Speed = 1f;
@@ -12,59 +12,51 @@ public class Movement: MonoBehaviour
     public float hpWarrior = 100;
     public int damage = 20;
 
-    
-
-    // Update is called once per frame
     void Update()
     {
         if (CanMove)
         {
-            Move(); 
+            Move();
 
         }
-        
     }
-
     private void Move()
     {
-        if(gameObject.CompareTag("Player"))
-        {
-            transform.position += Vector3.right * Speed * Time.deltaTime;
+        if (gameObject.CompareTag("Enemy"))
+            {
+                transform.position += Vector3.left* Speed * Time.deltaTime;
 
-        }
-        
+            }
 
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if(collision.gameObject)
-            {
-                CanMove = true;
-            }
+        if (collision.gameObject)
+        {
+            CanMove = true;
+        }
         CancelInvoke(nameof(TakeDamage));
     }
 
-
     private void OnCollisionEnter2D(Collision2D boxCollision2D)
     {
-        if (boxCollision2D.gameObject.CompareTag("Enemy"))
+        if (boxCollision2D.gameObject.CompareTag("Player"))
         {
             CanMove = false;
-            
+
         }
 
 
         Debug.Log("Kolize detekována s: " + boxCollision2D.gameObject.name);
-        if (boxCollision2D.gameObject.CompareTag("Enemy") && gameObject.CompareTag("Player"))
+        if (boxCollision2D.gameObject.CompareTag("Player") && gameObject.CompareTag("Enemy"))
         {
 
-            InvokeRepeating(nameof(TakeDamage), 0f, 2f);
+            InvokeRepeating(nameof(TakeDamage), 0f, 1.9f);
 
 
         }
     }
-
 
     public void TakeDamage()
     {
@@ -75,8 +67,7 @@ public class Movement: MonoBehaviour
             GameManager.Instance.AddGold(!isPlayerUnit, 30);
             Destroy(gameObject);
         }
-        
-    }
 
+    }
     
 }
