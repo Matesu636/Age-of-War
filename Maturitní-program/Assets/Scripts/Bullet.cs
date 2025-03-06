@@ -7,7 +7,8 @@ public class Bullet : MonoBehaviour
     private Transform target;
 
     [SerializeField] private Rigidbody2D rb;
-    [SerializeField] private float bulletSpeed;
+    [SerializeField] private float bulletSpeed = 5f;
+    [SerializeField] private float bulletDamage = 20f;
 
     public void SetTarget(Transform _target)
     {
@@ -22,8 +23,14 @@ public class Bullet : MonoBehaviour
         rb.velocity = direction * bulletSpeed;
     }
 
-    private void OnCollisionEnter2D(Collision2D other)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
+        EnemyMove enemy = collision.gameObject.GetComponent<EnemyMove>();
+        if (enemy != null)
+        {
+            enemy.TakeDamage(bulletDamage);
+        }
+
         Destroy(gameObject);
     }
 }

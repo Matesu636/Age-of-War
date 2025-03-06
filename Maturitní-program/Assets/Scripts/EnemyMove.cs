@@ -10,7 +10,7 @@ public class EnemyMove : MonoBehaviour
 
     public bool isPlayerUnit;
     public float hpWarrior = 100;
-    public int damage = 20;
+    public float damage = 20;
 
     void Update()
     {
@@ -32,11 +32,11 @@ public class EnemyMove : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject)
+        if (collision.gameObject.CompareTag("Player"))
         {
             CanMove = true;
         }
-        CancelInvoke(nameof(TakeDamage));
+        CancelInvoke(nameof(ApplyDamage));
     }
 
     private void OnCollisionEnter2D(Collision2D boxCollision2D)
@@ -52,16 +52,21 @@ public class EnemyMove : MonoBehaviour
         if (boxCollision2D.gameObject.CompareTag("Player") && gameObject.CompareTag("Enemy"))
         {
 
-            InvokeRepeating(nameof(TakeDamage), 0f, 1.9f);
+            InvokeRepeating(nameof(ApplyDamage), 0f, 1.9f);
 
 
         }
     }
 
-    public void TakeDamage()
+    private void ApplyDamage()
     {
+        TakeDamage(damage);
+    }
 
-        hpWarrior -= damage;
+    public void TakeDamage(float dmg)
+    {
+        
+        hpWarrior -= dmg;
         if (hpWarrior <= 0)
         {
             GameManager.Instance.AddGold(!isPlayerUnit, 30);
