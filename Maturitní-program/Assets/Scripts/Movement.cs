@@ -4,21 +4,33 @@ using UnityEngine;
 
 public class Movement: MonoBehaviour
 {
+    private Animator animator;
     BoxCollider2D boxCollider2D;
+
     public float Speed = 1f;
     private bool CanMove = true;
+
+    //private bool isGrounded;
+    //private bool isAttacking;
 
     public bool isPlayerUnit;
     public float hpWarrior = 100;
     public int damage = 20;
 
-    
 
+
+
+    private void Start()
+    {
+        
+        animator = GetComponent<Animator>();
+    }
     // Update is called once per frame
     void Update()
     {
         if (CanMove)
         {
+            
             Move(); 
 
         }
@@ -30,7 +42,7 @@ public class Movement: MonoBehaviour
         if(gameObject.CompareTag("Player"))
         {
             transform.position += Vector3.right * Speed * Time.deltaTime;
-
+            //animator.SetBool("Grounded", true);
         }
         
 
@@ -39,19 +51,26 @@ public class Movement: MonoBehaviour
     private void OnCollisionExit2D(Collision2D collision)
     {
         if(collision.gameObject)
-            {
-                CanMove = true;
-            }
+        {
+            CanMove = true;
+            //animator.SetBool("Grounded", true);
+        }
         CancelInvoke(nameof(TakeDamage));
+
+        if (collision.gameObject.CompareTag("EnemyBaseHP"))
+        {
+            CancelInvoke(nameof(AttackBase)); // Přestane útočit, pokud se vzdálí
+        }
     }
 
 
     private void OnCollisionEnter2D(Collision2D boxCollision2D)
     {
-        if (boxCollision2D.gameObject.CompareTag("Enemy"))
+        if (boxCollision2D.gameObject)
         {
             CanMove = false;
-            
+            //animator.SetBool("Grounded", false);
+
         }
 
 
@@ -62,6 +81,11 @@ public class Movement: MonoBehaviour
             InvokeRepeating(nameof(TakeDamage), 0f, 2f);
 
 
+        }
+
+        if (boxCollision2D.gameObject.CompareTag("EnemyBaseHP"))
+        {
+            InvokeRepeating(nameof(AttackBase), 0f, 2f); // Útok každé 2 sekundy
         }
     }
 
@@ -77,6 +101,16 @@ public class Movement: MonoBehaviour
         }
         
     }
+    public void AttackBase()
+    {
+        EnemyBase enemyBase = GameObject.FindGameObjectWithTag("EnemyBaseHP").GetComponent<EnemyBase>();
+        if (enemyBase != null)
+        {
+            enemyBase.TakeDamage(damage);
+        }
+    }
 
-    
+
+
+
 }

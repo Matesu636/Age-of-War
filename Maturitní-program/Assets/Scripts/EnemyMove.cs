@@ -41,7 +41,7 @@ public class EnemyMove : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D boxCollision2D)
     {
-        if (boxCollision2D.gameObject.CompareTag("Player"))
+        if (boxCollision2D.gameObject)
         {
             CanMove = false;
 

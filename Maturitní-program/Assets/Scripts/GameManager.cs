@@ -15,6 +15,9 @@ public class GameManager : MonoBehaviour
 
     public int PlayerGold = 100;
 
+    public int baseHealth = 300;
+    public int enemyBaseHealth = 300;
+
     private void Awake()
     {
         if (Instance == null)
@@ -68,6 +71,8 @@ public class GameManager : MonoBehaviour
 
         
     }
+
+    
 
     
 }

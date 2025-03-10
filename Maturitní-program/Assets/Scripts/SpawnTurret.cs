@@ -6,6 +6,7 @@ public class SpawnTurret : MonoBehaviour
 {
     public GameObject turretGO;
     public Transform spawnPoint;
+    public GameObject TurretManager;
 
     private GameManager gm;
 
@@ -27,10 +28,20 @@ public class SpawnTurret : MonoBehaviour
             {
                 Instantiate(turretGO, spawnPoint.position, Quaternion.identity);
 
-
-
             }
         }
+    }
+
+    
+
+    public void MenuShow()
+    {
+        TurretManager.SetActive(true);
+    }
+
+    public void MenuHide()
+    {
+        TurretManager.SetActive(false);
     }
 
 }

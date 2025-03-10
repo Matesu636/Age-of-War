@@ -82,5 +82,8 @@ public class Turret : MonoBehaviour
         bulletScript.SetTarget(target);
     }
 
-    
+    private void OnMouseDown()
+    {
+        Destroy(gameObject);
+    }
 }
