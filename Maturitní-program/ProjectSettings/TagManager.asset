@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Enemy
   - EnemyBaseHP
+  - BaseHP
   layers:
   - Default
   - TransparentFX

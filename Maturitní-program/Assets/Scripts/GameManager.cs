@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
 
     public TextMeshProUGUI text;
 
-    
+
 
     //[SerializeField]
 
@@ -33,17 +33,17 @@ public class GameManager : MonoBehaviour
     /// <returns>True if subtraction was successfull</returns>
     public bool SubtractGold(int gold)
     {
-        if(gold>0)
+        if (gold > 0)
         {
-            if(PlayerGold>gold)
+            if (PlayerGold >= gold)
             {
                 PlayerGold -= gold;
                 text.text = PlayerGold.ToString();
+                return true;
 
             }
 
-            return true;
-
+            return false;
         }
         else
         {
@@ -57,7 +57,7 @@ public class GameManager : MonoBehaviour
     {
         if (isPlayerUnit)
         {
-            if(gold >0)
+            if (gold > 0)
             {
                 PlayerGold += gold;
                 text.text = PlayerGold.ToString();
@@ -69,10 +69,10 @@ public class GameManager : MonoBehaviour
 
         }
 
-        
+
     }
 
-    
 
-    
+
+
 }

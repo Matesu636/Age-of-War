@@ -10,7 +10,11 @@ public class EnemyMove : MonoBehaviour
 
     public bool isPlayerUnit;
     public float hpWarrior = 100;
-    public float damage = 20;
+    public int damage = 20;
+
+    
+
+   
 
     void Update()
     {
@@ -28,15 +32,21 @@ public class EnemyMove : MonoBehaviour
 
             }
 
+
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
+        if (collision.gameObject)
         {
             CanMove = true;
         }
         CancelInvoke(nameof(ApplyDamage));
+
+        if (collision.gameObject.CompareTag("BaseHP"))
+        {
+            CancelInvoke(nameof(AttackBase)); // Přestane útočit, pokud se vzdálí
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D boxCollision2D)
@@ -56,6 +66,10 @@ public class EnemyMove : MonoBehaviour
 
 
         }
+        if (boxCollision2D.gameObject.CompareTag("BaseHP"))
+        {
+            InvokeRepeating(nameof(AttackBase), 0f, 2f); // Útok každé 2 sekundy
+        }
     }
 
     private void ApplyDamage()
@@ -74,5 +88,15 @@ public class EnemyMove : MonoBehaviour
         }
 
     }
+
+    public void AttackBase()
+    {
+        Base playeBase = GameObject.FindGameObjectWithTag("BaseHP").GetComponent<Base>();
+        if (playeBase != null)
+        {
+            playeBase.TakeDamage(damage);
+        }
+    }
+
     
 }
