@@ -1,11 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
-public class Movement : MonoBehaviour
+public class WizzMovement : MonoBehaviour
 {
     private Animator animator;
     BoxCollider2D boxCollider2D;
+
+
+    [SerializeField] private float targetingRange = 5f;
+    [SerializeField] private LayerMask enemyMask;
+    private Transform target;
+
+    [SerializeField] private GameObject orbPrefab;
+    [SerializeField] private Transform firingPoint;
+
+    [SerializeField] private float bps = 1f;
+    private float timeUntilFire;
 
 
     public float Speed = 1f;
@@ -18,7 +30,7 @@ public class Movement : MonoBehaviour
     public float hpWarrior = 100;
     public int damage = 20;
 
-    
+
     private void Start()
     {
 
@@ -35,15 +47,49 @@ public class Movement : MonoBehaviour
 
         }
 
+        if (target == null)
+        {
+            FindTarget();
+            return;
+        }
+
+        if (!CheckTarget())
+        {
+            target = null;
+        }
+        else
+        {
+            timeUntilFire += Time.deltaTime;
+            if (timeUntilFire >= 1f / bps)
+            {
+                Shoot();
+                timeUntilFire = 0f;
+            }
+
+        }
+
     }
-    
+
+    private bool CheckTarget()
+    {
+        return Vector2.Distance(target.position, transform.position) <= targetingRange;
+    }
+
+    private void FindTarget()
+    {
+        RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, targetingRange, (Vector2)transform.position, 0f, enemyMask);
+        if (hits.Length > 0)
+        {
+            target = hits[0].transform;
+        }
+    }
 
     private void Move()
     {
         if (gameObject.CompareTag("Player"))
         {
             transform.position += Vector3.right * Speed * Time.deltaTime;
-            //animator.SetBool("Grounded", true);
+            
         }
 
 
@@ -54,9 +100,9 @@ public class Movement : MonoBehaviour
         if (collision.gameObject)
         {
             canMove = true;
-            //animator.SetBool("Grounded", true);
+            
         }
-        CancelInvoke(nameof(TakeDamage));
+        CancelInvoke(nameof(Shoot));
 
         if (collision.gameObject.CompareTag("EnemyBaseHP"))
         {
@@ -70,7 +116,7 @@ public class Movement : MonoBehaviour
         if (boxCollision2D.gameObject)
         {
             canMove = false;
-            //animator.SetBool("Grounded", false);
+           
 
         }
 
@@ -79,7 +125,7 @@ public class Movement : MonoBehaviour
         if (boxCollision2D.gameObject.CompareTag("Enemy") && gameObject.CompareTag("Player"))
         {
 
-            InvokeRepeating(nameof(TakeDamage), 0f, 2f);
+            InvokeRepeating(nameof(Shoot), 0f, 2f);
 
 
         }
@@ -91,17 +137,13 @@ public class Movement : MonoBehaviour
     }
 
 
-    public void TakeDamage()
+    private void Shoot()
     {
-
-        hpWarrior -= damage;
-        if (hpWarrior <= 0)
-        {
-            GameManager.Instance.AddGold(!isPlayerUnit, 30);
-            Destroy(gameObject);
-        }
-
+        GameObject orbObj = Instantiate(orbPrefab, firingPoint.position, Quaternion.identity);
+        OrbSpawn orbScript = orbObj.GetComponent<OrbSpawn>();
+        orbScript.SetTarget(target);
     }
+
     public void AttackBase()
     {
         EnemyBase enemyBase = GameObject.FindGameObjectWithTag("EnemyBaseHP").GetComponent<EnemyBase>();

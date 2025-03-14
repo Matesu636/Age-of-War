@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EnemyBase : MonoBehaviour
 {
     public int enemyBaseHealth = 500; // Životy základny
+    public Slider healthSlider;
+
 
     public GameObject enemyPrefab;
     public Transform spawnPos;
@@ -18,6 +21,11 @@ public class EnemyBase : MonoBehaviour
         //InvokeRepeating("SpawnEnemy", 1f, spawnInterval);
         targetTime = 15;
 
+        if (healthSlider != null)
+        {
+            healthSlider.maxValue = enemyBaseHealth;
+            healthSlider.value = enemyBaseHealth;
+        }
     }
     private void Update()
     {
@@ -38,6 +46,11 @@ public class EnemyBase : MonoBehaviour
     {
         enemyBaseHealth -= damage;
         Debug.Log("Nepřátelská základna dostala damage: " + damage + ". Zbývající HP: " + enemyBaseHealth);
+
+        if (healthSlider != null)
+        {
+            healthSlider.value = enemyBaseHealth;
+        }
 
         if (enemyBaseHealth <= 0)
         {

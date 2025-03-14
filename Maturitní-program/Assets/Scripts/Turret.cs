@@ -20,11 +20,7 @@ public class Turret : MonoBehaviour
     private float timeUntilFire;
 
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    
 
     private void Update()
     {
