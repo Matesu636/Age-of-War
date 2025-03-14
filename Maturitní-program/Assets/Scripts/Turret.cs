@@ -15,12 +15,12 @@ public class Turret : MonoBehaviour
 
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Transform firingPoint;
-    
+
     [SerializeField] private float bps = 1f;
     private float timeUntilFire;
 
 
-    
+
 
     private void Update()
     {

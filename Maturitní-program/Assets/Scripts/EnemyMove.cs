@@ -91,10 +91,10 @@ public class EnemyMove : MonoBehaviour
 
     public void AttackBase()
     {
-        Base playeBase = GameObject.FindGameObjectWithTag("BaseHP").GetComponent<Base>();
-        if (playeBase != null)
+        Base playerBase = GameObject.FindGameObjectWithTag("BaseHP").GetComponent<Base>();
+        if (playerBase != null)
         {
-            playeBase.TakeDamage(damage);
+            playerBase.TakeDamage(damage);
         }
     }
 
