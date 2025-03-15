@@ -10,17 +10,29 @@ public class OrbSpawn : MonoBehaviour
     [SerializeField] private float orbSpeed = 5f;
     [SerializeField] private float orbDamage = 20f;
 
+
+    private void Start()
+    {
+        
+    
+    }
     public void SetTarget(Transform _target)
     {
         target = _target;
+
     }
 
     private void FixedUpdate()
     {
+        
+
         if (!target) return;
 
         Vector2 direction = (target.position - transform.position).normalized;
         rb.velocity = direction * orbSpeed;
+
+        
+    
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

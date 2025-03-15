@@ -62,6 +62,10 @@ public class EnemyMove : MonoBehaviour
         if (boxCollision2D.gameObject.CompareTag("Player") && gameObject.CompareTag("Enemy"))
         {
 
+            // Pokud jsme útočili na základnu, přestaneme
+            CancelInvoke(nameof(AttackBase));
+
+            // Začneme útočit na nepřítele
             InvokeRepeating(nameof(ApplyDamage), 0f, 1.9f);
 
 

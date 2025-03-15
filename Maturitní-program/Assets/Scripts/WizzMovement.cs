@@ -104,10 +104,10 @@ public class WizzMovement : MonoBehaviour
         }
         CancelInvoke(nameof(Shoot));
 
-        if (collision.gameObject.CompareTag("EnemyBaseHP"))
-        {
-            CancelInvoke(nameof(AttackBase)); // Přestane útočit, pokud se vzdálí
-        }
+        //if (collision.gameObject.CompareTag("EnemyBaseHP"))
+        //{
+        //    CancelInvoke(nameof(AttackBase)); // Přestane útočit, pokud se vzdálí
+        //}
     }
 
 
@@ -130,10 +130,10 @@ public class WizzMovement : MonoBehaviour
 
         }
 
-        if (boxCollision2D.gameObject.CompareTag("EnemyBaseHP"))
-        {
-            InvokeRepeating(nameof(AttackBase), 0f, 2f); // Útok každé 2 sekundy
-        }
+        //if (boxCollision2D.gameObject.CompareTag("EnemyBaseHP"))
+        //{
+        //    InvokeRepeating(nameof(AttackBase), 0f, 2f); // Útok každé 2 sekundy
+        //}
     }
 
 
@@ -144,14 +144,14 @@ public class WizzMovement : MonoBehaviour
         orbScript.SetTarget(target);
     }
 
-    public void AttackBase()
-    {
-        EnemyBase enemyBase = GameObject.FindGameObjectWithTag("EnemyBaseHP").GetComponent<EnemyBase>();
-        if (enemyBase != null)
-        {
-            enemyBase.TakeDamage(damage);
-        }
-    }
+    //public void AttackBase()
+    //{
+    //    EnemyBase enemyBase = GameObject.FindGameObjectWithTag("EnemyBaseHP").GetComponent<EnemyBase>();
+    //    if (enemyBase != null)
+    //    {
+    //        enemyBase.TakeDamage(damage);
+    //    }
+    //}
 
 
 

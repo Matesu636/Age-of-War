@@ -36,7 +36,7 @@ public class EnemyBase : MonoBehaviour
             targetTime = Random.Range(5, 15);
             //Debug.Log(targetTime);
         }
-        Debug.Log(targetTime);
+        //Debug.Log(targetTime);
 
     }
 

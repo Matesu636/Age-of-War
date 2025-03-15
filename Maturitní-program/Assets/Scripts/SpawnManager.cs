@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
+    public int warriorCost = 20;
+    public int wizzCost = 30;
+
     public GameObject warriorPrefab;  // Prefab pro Warriora
     public GameObject archerPrefab;   // Prefab pro Archera
 
@@ -20,14 +23,21 @@ public class SpawnManager : MonoBehaviour
 
     public void SpawnWarrior()
     {
-        warriorQueue.Enqueue(warriorPrefab); // Přidá Warriora do fronty
-        TrySpawnWarrior();
+        if (GameManager.Instance.SubtractGold(warriorCost))
+        {
+            warriorQueue.Enqueue(warriorPrefab); // Přidá Warriora do fronty
+            TrySpawnWarrior();
+        }
+        
     }
 
     public void SpawnArcher()
     {
-        archerQueue.Enqueue(archerPrefab); // Přidá Archera do fronty
-        TrySpawnArcher();
+        if (GameManager.Instance.SubtractGold(wizzCost))
+        {
+            archerQueue.Enqueue(archerPrefab); // Přidá Archera do fronty
+            TrySpawnArcher();
+        }
     }
 
     private void TrySpawnWarrior()
