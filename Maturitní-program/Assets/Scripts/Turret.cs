@@ -9,6 +9,7 @@ public class Turret : MonoBehaviour
     [SerializeField] private LayerMask enemyMask;
     [SerializeField] private float targetingRange = 5f;
     [SerializeField] private float rotationSpeed = 5f;
+    [SerializeField] private float bulletDamage = 20f;  
 
     private Transform target;
 
@@ -20,7 +21,10 @@ public class Turret : MonoBehaviour
     private float timeUntilFire;
 
 
-
+    private void Start()
+    {
+        GameManager.Instance.SetTurret(this);
+    }
 
     private void Update()
     {
@@ -69,17 +73,27 @@ public class Turret : MonoBehaviour
         rotationPoint.rotation = Quaternion.RotateTowards(rotationPoint.rotation, targetRotation, rotationSpeed * Time.deltaTime);
     }
 
+    public void IncreaseDamage(float amount)
+    {
+        bulletDamage += amount;
+        Debug.Log("💥 Nové damage Turret: " + bulletDamage);
+    }
 
+    public float GetDamage()
+    {
+        return bulletDamage;
+    }
 
     private void Shoot()
     {
         Debug.Log("Turret střílí!");
         GameObject bulletObj = Instantiate(bulletPrefab, firingPoint.position, Quaternion.identity);
         Bullet bulletScript = bulletObj.GetComponent<Bullet>();
-        bulletScript.SetTarget(target);
+        
 
         if (bulletScript != null)
         {
+            bulletScript.SetDamage(bulletDamage);
             bulletScript.SetTarget(target);
             Debug.Log("Střela má správný cíl: " + target.name);
         }

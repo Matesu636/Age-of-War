@@ -11,12 +11,12 @@ public class GameManager : MonoBehaviour
 
 
 
-    //[SerializeField]
+    private Turret turret;
 
     public int PlayerGold = 100;
 
-    public int baseHealth = 300;
-    public int enemyBaseHealth = 300;
+    public int baseHealth = 400;
+    public int enemyBaseHealth = 400;
 
     private void Awake()
     {
@@ -72,7 +72,29 @@ public class GameManager : MonoBehaviour
 
     }
 
+    public void SetTurret(Turret t)
+    {
+        turret = t;
+    }
+
+    public void UpgradeTurretDamage()
+    {
+        int upgradeCost = 50; // Cena upgradu
+
+        if (PlayerGold >= upgradeCost && turret != null)
+        {
+            PlayerGold -= upgradeCost;
+            text.text = PlayerGold.ToString();
+            turret.IncreaseDamage(10); // Zvýší damage o 10
+            Debug.Log("🔼 Turret damage upgradován! Nové damage: " + turret.GetDamage());
+        }
+        else
+        {
+            Debug.Log("❌ Nedostatek zlata nebo turret neexistuje!");
+        }
 
 
 
+
+    }
 }

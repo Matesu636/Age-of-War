@@ -10,6 +10,8 @@ public class Bullet : MonoBehaviour
     [SerializeField] private float bulletSpeed = 5f;
     [SerializeField] private float bulletDamage = 20f;
 
+    
+
     public void SetTarget(Transform _target)
     {
         target = _target;
@@ -33,4 +35,11 @@ public class Bullet : MonoBehaviour
 
         Destroy(gameObject);
     }
+
+    public void SetDamage(float damage)
+    {
+        bulletDamage = damage;
+    }
+
+
 }

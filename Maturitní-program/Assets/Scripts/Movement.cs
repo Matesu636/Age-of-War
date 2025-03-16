@@ -5,14 +5,13 @@ using UnityEngine;
 public class Movement : MonoBehaviour
 {
     private Animator animator;
-    BoxCollider2D boxCollider2D;
+    private Rigidbody2D rb;
 
 
     public float Speed = 1f;
     private bool canMove = true;
 
-    //private bool isGrounded;
-    //private bool isAttacking;
+    
 
     public bool isPlayerUnit;
     public float hpWarrior = 100;
@@ -23,6 +22,7 @@ public class Movement : MonoBehaviour
     {
 
         animator = GetComponent<Animator>();
+        rb = GetComponent<Rigidbody2D>();
 
     }
     // Update is called once per frame
@@ -43,7 +43,7 @@ public class Movement : MonoBehaviour
         if (gameObject.CompareTag("Player"))
         {
             transform.position += Vector3.right * Speed * Time.deltaTime;
-            //animator.SetBool("Grounded", true);
+            animator.SetBool("isRunning", true);
         }
 
 
@@ -54,7 +54,7 @@ public class Movement : MonoBehaviour
         if (collision.gameObject)
         {
             canMove = true;
-            //animator.SetBool("Grounded", true);
+            
         }
         CancelInvoke(nameof(TakeDamage));
 
@@ -70,23 +70,28 @@ public class Movement : MonoBehaviour
         if (boxCollision2D.gameObject)
         {
             canMove = false;
-            //animator.SetBool("Grounded", false);
+            animator.SetBool("isRunning", false);
 
         }
 
-
-        Debug.Log("Kolize detekována s: " + boxCollision2D.gameObject.name);
-        if (boxCollision2D.gameObject.CompareTag("Enemy") && gameObject.CompareTag("Player"))
+        if (boxCollision2D.gameObject.CompareTag("Enemy"))
         {
-
-            // Pokud jsme útočili na základnu, přestaneme
-            CancelInvoke(nameof(AttackBase));
-
-            // Začneme útočit na nepřítele
-            InvokeRepeating(nameof(TakeDamage), 0f, 2f);
-
-
+            InvokeRepeating(nameof(AttackEnemy), 0f, 2f);
         }
+
+        //if (boxCollision2D.gameObject.CompareTag("Enemy") && gameObject.CompareTag("Player"))
+        //{
+        //
+        //    // Pokud jsme útočili na základnu, přestaneme
+        //    CancelInvoke(nameof(AttackBase));
+        //
+        //    // Začneme útočit na nepřítele
+        //    InvokeRepeating(nameof(TakeDamage), 0f, 2f);
+        //
+        //    InvokeRepeating(nameof(AttackEnemy),0f,2f);
+        //
+        //
+        //}
 
         if (boxCollision2D.gameObject.CompareTag("EnemyBaseHP"))
         {
@@ -94,18 +99,31 @@ public class Movement : MonoBehaviour
         }
     }
 
+    private void AttackEnemy()
+    {
+        animator.SetBool("isAttacking", true); // Spustí animaci útoku
+    }
 
-    public void TakeDamage()
+
+    public void TakeDamage(float dmg)
     {
 
         hpWarrior -= damage;
+        animator.SetTrigger("isHurt");
         if (hpWarrior <= 0)
         {
-            GameManager.Instance.AddGold(!isPlayerUnit, 30);
-            Destroy(gameObject);
+            Die();
         }
 
     }
+
+    private void Die()
+    {
+        canMove = false;
+        animator.SetBool("isDead", true); // Animace smrti
+        Destroy(gameObject, 2f); // Zničí objekt po 2s
+    }
+
     public void AttackBase()
     {
         EnemyBase enemyBase = GameObject.FindGameObjectWithTag("EnemyBaseHP").GetComponent<EnemyBase>();
