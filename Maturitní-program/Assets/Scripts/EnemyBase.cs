@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class EnemyBase : MonoBehaviour
 {
@@ -62,6 +63,7 @@ public class EnemyBase : MonoBehaviour
     {
         Debug.Log("Nepřátelská základna byla zničena!");
         Destroy(gameObject); // Zničí základnu
+        SceneManager.LoadScene(0);
     }
 
     private void SpawnEnemy()

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Base : MonoBehaviour
 {
@@ -36,5 +37,7 @@ public class Base : MonoBehaviour
     {
         Debug.Log("Nepřátelská základna byla zničena!");
         Destroy(gameObject); // Zničí základnu
+        SceneManager.LoadScene(0);
+
     }
 }

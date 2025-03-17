@@ -4,21 +4,26 @@ using UnityEngine;
 
 public class EnemyMove : MonoBehaviour
 {
+    private Animator animator;
     BoxCollider2D boxCollider2D;
+
     public float Speed = 1f;
-    private bool CanMove = true;
+    private bool canMove = true;
 
     public bool isPlayerUnit;
     public float hpWarrior = 100;
     public int damage = 20;
 
-    
 
-   
+    private void Start()
+    {
+        animator = GetComponent<Animator>();
+    }
+
 
     void Update()
     {
-        if (CanMove)
+        if (canMove)
         {
             Move();
 
@@ -27,10 +32,10 @@ public class EnemyMove : MonoBehaviour
     private void Move()
     {
         if (gameObject.CompareTag("Enemy"))
-            {
-                transform.position += Vector3.left* Speed * Time.deltaTime;
-
-            }
+        {
+            transform.position += Vector3.left * Speed * Time.deltaTime;
+            animator.SetBool("isRunning", true);
+        }
 
 
     }
@@ -39,9 +44,11 @@ public class EnemyMove : MonoBehaviour
     {
         if (collision.gameObject)
         {
-            CanMove = true;
+            canMove = true;
         }
         CancelInvoke(nameof(ApplyDamage));
+        CancelInvoke(nameof(AttackEnemy));
+        animator.SetBool("isAttacking", false);
 
         if (collision.gameObject.CompareTag("BaseHP"))
         {
@@ -53,7 +60,8 @@ public class EnemyMove : MonoBehaviour
     {
         if (boxCollision2D.gameObject)
         {
-            CanMove = false;
+            canMove = false;
+            animator.SetBool("isRunning", false);
 
         }
 
@@ -67,6 +75,7 @@ public class EnemyMove : MonoBehaviour
 
             // Začneme útočit na nepřítele
             InvokeRepeating(nameof(ApplyDamage), 0f, 1.9f);
+            InvokeRepeating(nameof(AttackEnemy), 0f, 1.9f);
 
 
         }
@@ -74,6 +83,16 @@ public class EnemyMove : MonoBehaviour
         {
             InvokeRepeating(nameof(AttackBase), 0f, 2f); // Útok každé 2 sekundy
         }
+    }
+
+    private void AttackEnemy()
+    {
+        animator.SetBool("isAttacking", true); // Spustí animaci útoku
+    }
+
+    private void StopAttacking()
+    {
+        animator.SetBool("isAttacking", false);
     }
 
     private void ApplyDamage()
@@ -84,13 +103,19 @@ public class EnemyMove : MonoBehaviour
     public void TakeDamage(float dmg)
     {
         hpWarrior -= dmg;
-        
+
 
         if (hpWarrior <= 0)
         {
-            GameManager.Instance.AddGold(!isPlayerUnit, 30);
-            Destroy(gameObject);
+            Die();
         }
+    }
+
+    public void Die()
+    {
+        canMove = false;
+        animator.SetBool("isDead", true); // Animace smrti
+        Destroy(gameObject, 1f); // Zničí objekt po 1s
     }
 
     public void AttackBase()
@@ -102,5 +127,5 @@ public class EnemyMove : MonoBehaviour
         }
     }
 
-    
+
 }
