@@ -104,10 +104,10 @@ public class WizzMovement : MonoBehaviour
         }
         CancelInvoke(nameof(Shoot));
 
-        //if (collision.gameObject.CompareTag("EnemyBaseHP"))
-        //{
-        //    CancelInvoke(nameof(AttackBase)); // Přestane útočit, pokud se vzdálí
-        //}
+        if (collision.gameObject.CompareTag("EnemyBaseHP"))
+        {
+            CancelInvoke(nameof(AttackBase)); // Přestane útočit, pokud se vzdálí
+        }
     }
 
 
@@ -126,6 +126,7 @@ public class WizzMovement : MonoBehaviour
         {
 
             InvokeRepeating(nameof(Shoot), 0f, 2f);
+            InvokeRepeating(nameof(ApplyDamage), 0f, 2f);
 
 
         }
@@ -136,6 +137,29 @@ public class WizzMovement : MonoBehaviour
         //}
     }
 
+    private void ApplyDamage()
+    {
+        TakeDamage(damage);
+    }
+
+    public void TakeDamage(float dmg)
+    {
+
+        hpWarrior -= dmg;
+        
+        if (hpWarrior <= 0)
+        {
+            
+            Die();
+        }
+
+    }
+
+    private void Die()
+    {
+        canMove = false;
+        Destroy(gameObject, 2f); // Zničí objekt po 2s
+    }
 
     private void Shoot()
     {
@@ -144,14 +168,14 @@ public class WizzMovement : MonoBehaviour
         orbScript.SetTarget(target);
     }
 
-    //public void AttackBase()
-    //{
-    //    EnemyBase enemyBase = GameObject.FindGameObjectWithTag("EnemyBaseHP").GetComponent<EnemyBase>();
-    //    if (enemyBase != null)
-    //    {
-    //        enemyBase.TakeDamage(damage);
-    //    }
-    //}
+    public void AttackBase()
+    {
+        EnemyBase enemyBase = GameObject.FindGameObjectWithTag("EnemyBaseHP").GetComponent<EnemyBase>();
+        if (enemyBase != null)
+        {
+            enemyBase.TakeDamage(damage);
+        }
+    }
 
 
 

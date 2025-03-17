@@ -36,6 +36,7 @@ public class Movement : MonoBehaviour
         }
 
     }
+
     
 
     private void Move()
@@ -57,6 +58,9 @@ public class Movement : MonoBehaviour
             
         }
         CancelInvoke(nameof(TakeDamage));
+        CancelInvoke(nameof(AttackEnemy));
+
+        animator.SetBool("isAttacking", false);
 
         if (collision.gameObject.CompareTag("EnemyBaseHP"))
         {
@@ -74,24 +78,21 @@ public class Movement : MonoBehaviour
 
         }
 
-        if (boxCollision2D.gameObject.CompareTag("Enemy"))
-        {
-            InvokeRepeating(nameof(AttackEnemy), 0f, 2f);
-        }
+        
 
-        //if (boxCollision2D.gameObject.CompareTag("Enemy") && gameObject.CompareTag("Player"))
-        //{
-        //
-        //    // Pokud jsme útočili na základnu, přestaneme
-        //    CancelInvoke(nameof(AttackBase));
-        //
-        //    // Začneme útočit na nepřítele
-        //    InvokeRepeating(nameof(TakeDamage), 0f, 2f);
-        //
-        //    InvokeRepeating(nameof(AttackEnemy),0f,2f);
-        //
-        //
-        //}
+        if (boxCollision2D.gameObject.CompareTag("Enemy") && gameObject.CompareTag("Player"))
+        {
+        
+            // Pokud jsme útočili na základnu, přestaneme
+            CancelInvoke(nameof(AttackBase));
+        
+            // Začneme útočit na nepřítele
+            InvokeRepeating(nameof(ApplyDamage), 0f, 2f);
+        
+            InvokeRepeating(nameof(AttackEnemy),0f,2f);
+        
+        
+        }
 
         if (boxCollision2D.gameObject.CompareTag("EnemyBaseHP"))
         {
@@ -104,14 +105,24 @@ public class Movement : MonoBehaviour
         animator.SetBool("isAttacking", true); // Spustí animaci útoku
     }
 
+    private void StopAttacking()
+    {
+        animator.SetBool("isAttacking", false);
+    }
+
+
+    private void ApplyDamage()
+    {
+        TakeDamage(damage);
+    }
 
     public void TakeDamage(float dmg)
     {
 
-        hpWarrior -= damage;
-        animator.SetTrigger("isHurt");
+        hpWarrior -= dmg;
         if (hpWarrior <= 0)
         {
+            
             Die();
         }
 
@@ -121,7 +132,7 @@ public class Movement : MonoBehaviour
     {
         canMove = false;
         animator.SetBool("isDead", true); // Animace smrti
-        Destroy(gameObject, 2f); // Zničí objekt po 2s
+        Destroy(gameObject, 1f); // Zničí objekt po 1s
     }
 
     public void AttackBase()

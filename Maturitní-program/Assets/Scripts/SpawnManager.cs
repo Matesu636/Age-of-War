@@ -16,11 +16,15 @@ public class SpawnManager : MonoBehaviour
     private Queue<GameObject> warriorQueue = new Queue<GameObject>(); // Fronta pro Warriory
     private Queue<GameObject> archerQueue = new Queue<GameObject>();  // Fronta pro Archery
 
-    public float spawnInterval = 1f; // Interval mezi spawny
+    
+
+    public float spawnInterval = 2f; // Interval mezi spawny
 
     private bool isSpawningWarrior = false; // Kontrola spawnování Warriora
     private bool isSpawningArcher = false;  // Kontrola spawnování Archera
 
+    
+    
     public void SpawnWarrior()
     {
         if (GameManager.Instance.SubtractGold(warriorCost))

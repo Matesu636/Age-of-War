@@ -83,14 +83,14 @@ public class EnemyMove : MonoBehaviour
 
     public void TakeDamage(float dmg)
     {
-        
         hpWarrior -= dmg;
+        
+
         if (hpWarrior <= 0)
         {
             GameManager.Instance.AddGold(!isPlayerUnit, 30);
             Destroy(gameObject);
         }
-
     }
 
     public void AttackBase()
