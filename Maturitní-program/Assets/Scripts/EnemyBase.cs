@@ -19,8 +19,8 @@ public class EnemyBase : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //InvokeRepeating("SpawnEnemy", 1f, spawnInterval);
-        targetTime = 15;
+        
+        targetTime = 3;
 
         if (healthSlider != null)
         {
@@ -35,7 +35,7 @@ public class EnemyBase : MonoBehaviour
         {
             SpawnEnemy();
             targetTime = Random.Range(5, 15);
-            //Debug.Log(targetTime);
+            
         }
         //Debug.Log(targetTime);
 
@@ -68,7 +68,7 @@ public class EnemyBase : MonoBehaviour
 
     private void SpawnEnemy()
     {
-        spawnInterval = Random.Range(1f, 3.5f);
+        
         Instantiate(enemyPrefab, spawnPos.position, Quaternion.identity);
     }
 }

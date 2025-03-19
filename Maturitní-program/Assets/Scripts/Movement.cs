@@ -62,11 +62,9 @@ public class Movement : MonoBehaviour
 
         animator.SetBool("isAttacking", false);
 
-        if (collision.gameObject.CompareTag("EnemyBaseHP"))
-        {
-            CancelInvoke(nameof(AttackBase)); // Přestane útočit, pokud se vzdálí
-        }
     }
+
+    
 
 
     private void OnCollisionEnter2D(Collision2D boxCollision2D)
@@ -83,9 +81,6 @@ public class Movement : MonoBehaviour
         if (boxCollision2D.gameObject.CompareTag("Enemy") && gameObject.CompareTag("Player"))
         {
         
-            // Pokud jsme útočili na základnu, přestaneme
-            CancelInvoke(nameof(AttackBase));
-        
             // Začneme útočit na nepřítele
             InvokeRepeating(nameof(ApplyDamage), 0f, 2f);
         
@@ -94,10 +89,26 @@ public class Movement : MonoBehaviour
         
         }
 
-        if (boxCollision2D.gameObject.CompareTag("EnemyBaseHP"))
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("BaseHP"))
         {
-            InvokeRepeating(nameof(AttackBase), 0f, 2f); // Útok každé 2 sekundy
+            canMove = true;
+            animator.SetBool("isRunning", true);
+
         }
+
+        if (collision.gameObject.CompareTag("EnemyBaseHP"))
+        {
+            canMove = false;
+            animator.SetBool("isRunning", false);
+
+            InvokeRepeating(nameof(AttackBase), 0f, 2f); // Útok každé 2 sekundy
+            InvokeRepeating(nameof(AttackEnemy), 0f, 2f);
+        }
+
     }
 
     private void AttackEnemy()
@@ -133,11 +144,14 @@ public class Movement : MonoBehaviour
         canMove = false;
         animator.SetBool("isDead", true); // Animace smrti
         Destroy(gameObject, 1f); // Zničí objekt po 1s
+
+        CancelInvoke(nameof(AttackBase));
+        CancelInvoke(nameof(ApplyDamage));
     }
 
     public void AttackBase()
     {
-        EnemyBase enemyBase = GameObject.FindGameObjectWithTag("EnemyBaseHP").GetComponent<EnemyBase>();
+        Base enemyBase = GameObject.FindGameObjectWithTag("EnemyBaseHP").GetComponent<Base>();
         if (enemyBase != null)
         {
             enemyBase.TakeDamage(damage);

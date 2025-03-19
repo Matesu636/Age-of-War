@@ -18,7 +18,7 @@ public class SpawnManager : MonoBehaviour
 
     
 
-    public float spawnInterval = 2f; // Interval mezi spawny
+    public float spawnInterval = 10f; // Interval mezi spawny
 
     private bool isSpawningWarrior = false; // Kontrola spawnování Warriora
     private bool isSpawningArcher = false;  // Kontrola spawnování Archera

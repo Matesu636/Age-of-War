@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-public class WizzMovement : MonoBehaviour
+public class EnemyWizzMovement : MonoBehaviour
 {
     private Animator animator;
-    BoxCollider2D boxCollider2D;
+
 
 
     [SerializeField] private float targetingRange = 10f;
@@ -72,7 +72,7 @@ public class WizzMovement : MonoBehaviour
     private void Shoot()
     {
         GameObject arrowObj = Instantiate(arrrowPrefab, firingPoint.position, Quaternion.identity);
-        Arrow arrowScript = arrowObj.GetComponent<Arrow>();
+        EnemyArrow arrowScript = arrowObj.GetComponent<EnemyArrow>();
         arrowScript.SetTarget(target);
     }
 
@@ -93,7 +93,7 @@ public class WizzMovement : MonoBehaviour
 
     private void Move()
     {
-        if (gameObject.CompareTag("Archer"))
+        if (gameObject.CompareTag("EnemyArcher"))
         {
             transform.position += Vector3.right * Speed * Time.deltaTime;
 
@@ -104,14 +104,14 @@ public class WizzMovement : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject)
+        if (collision.gameObject)//Kvuli tomu jde skrz zakladny
         {
             canMove = true;
 
         }
 
 
-        if (collision.gameObject.CompareTag("EnemyBaseHP"))
+        if (collision.gameObject.CompareTag("BaseHP"))
         {
             CancelInvoke(nameof(AttackBase)); // Přestane útočit, pokud se vzdálí
         }
@@ -129,7 +129,7 @@ public class WizzMovement : MonoBehaviour
 
 
         Debug.Log("Kolize detekována s: " + boxCollision2D.gameObject.name);
-        if (boxCollision2D.gameObject.CompareTag("Enemy") && gameObject.CompareTag("Archer"))
+        if (boxCollision2D.gameObject.CompareTag("Player") && gameObject.CompareTag("EnemyArcher"))
         {
 
 
@@ -138,7 +138,7 @@ public class WizzMovement : MonoBehaviour
 
         }
 
-        if (boxCollision2D.gameObject.CompareTag("EnemyBaseHP"))
+        if (boxCollision2D.gameObject.CompareTag("BaseHP"))
         {
             InvokeRepeating(nameof(AttackBase), 0f, 2f); // Útok každé 2 sekundy
         }
@@ -172,10 +172,10 @@ public class WizzMovement : MonoBehaviour
 
     public void AttackBase()
     {
-        EnemyBase enemyBase = GameObject.FindGameObjectWithTag("EnemyBaseHP").GetComponent<EnemyBase>();
-        if (enemyBase != null)
+        Base _base = GameObject.FindGameObjectWithTag("BaseHP").GetComponent<Base>();
+        if (_base != null)
         {
-            enemyBase.TakeDamage(damage);
+            _base.TakeDamage(damage);
         }
     }
 

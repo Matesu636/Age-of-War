@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,6 +12,7 @@ public class EnemyMove : MonoBehaviour
     public bool isPlayerUnit;
     public float hpWarrior = 100;
     public int damage = 20;
+    public int gainCoin = 20;
 
 
     private void Start()
@@ -48,13 +48,12 @@ public class EnemyMove : MonoBehaviour
         }
         CancelInvoke(nameof(ApplyDamage));
         CancelInvoke(nameof(AttackEnemy));
+
         animator.SetBool("isAttacking", false);
 
-        if (collision.gameObject.CompareTag("BaseHP"))
-        {
-            CancelInvoke(nameof(AttackBase)); // Přestane útočit, pokud se vzdálí
-        }
     }
+
+    
 
     private void OnCollisionEnter2D(Collision2D boxCollision2D)
     {
@@ -67,7 +66,7 @@ public class EnemyMove : MonoBehaviour
 
 
         Debug.Log("Kolize detekována s: " + boxCollision2D.gameObject.name);
-        if (boxCollision2D.gameObject.CompareTag("Player") && gameObject.CompareTag("Enemy"))
+        if (boxCollision2D.gameObject.CompareTag("Player")|| boxCollision2D.gameObject.CompareTag("Archer") && gameObject.CompareTag("Enemy"))
         {
 
             // Pokud jsme útočili na základnu, přestaneme
@@ -79,10 +78,27 @@ public class EnemyMove : MonoBehaviour
 
 
         }
-        if (boxCollision2D.gameObject.CompareTag("BaseHP"))
+        
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("EnemybaseHP"))
         {
-            InvokeRepeating(nameof(AttackBase), 0f, 2f); // Útok každé 2 sekundy
+            canMove = true;
+            animator.SetBool("isRunning", true);
+
         }
+
+        if (collision.gameObject.CompareTag("BaseHP"))
+        {
+            canMove = false;
+            animator.SetBool("isRunning", false);
+
+            InvokeRepeating(nameof(AttackBase), 0f, 2f); // Útok každé 2 sekundy
+            InvokeRepeating(nameof(AttackEnemy), 0f, 2f);
+        }
+        
     }
 
     private void AttackEnemy()
@@ -108,6 +124,7 @@ public class EnemyMove : MonoBehaviour
         if (hpWarrior <= 0)
         {
             Die();
+            return;
         }
     }
 
@@ -116,6 +133,7 @@ public class EnemyMove : MonoBehaviour
         canMove = false;
         animator.SetBool("isDead", true); // Animace smrti
         Destroy(gameObject, 1f); // Zničí objekt po 1s
+        GameManager.Instance.AddGold(isPlayerUnit,gainCoin);
     }
 
     public void AttackBase()

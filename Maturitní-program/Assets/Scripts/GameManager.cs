@@ -13,10 +13,15 @@ public class GameManager : MonoBehaviour
 
     private Turret turret;
 
+    private WizzMovement wizz;
+
     public int PlayerGold = 100;
 
-    public int baseHealth = 400;
-    public int enemyBaseHealth = 400;
+
+    private void Start()
+    {
+        text.text = PlayerGold.ToString();
+    }
 
     private void Awake()
     {
@@ -55,7 +60,7 @@ public class GameManager : MonoBehaviour
 
     public void AddGold(bool isPlayerUnit, int gold)
     {
-        if (isPlayerUnit)
+        if (!isPlayerUnit)
         {
             if (gold > 0)
             {
@@ -68,7 +73,7 @@ public class GameManager : MonoBehaviour
             }
 
         }
-
+            
 
     }
 
@@ -76,6 +81,13 @@ public class GameManager : MonoBehaviour
     {
         turret = t;
     }
+
+    public void SetWizz(WizzMovement w)
+    {
+        wizz = w;
+    }
+
+
 
     public void UpgradeTurretDamage()
     {
