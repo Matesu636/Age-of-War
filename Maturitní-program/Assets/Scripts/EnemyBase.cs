@@ -6,12 +6,15 @@ using UnityEngine.SceneManagement;
 
 public class EnemyBase : MonoBehaviour
 {
-    public int enemyBaseHealth = 500; // Životy základny
+    public float enemyBaseHealth = 500; // Životy základny
     public Slider healthSlider;
 
 
-    public GameObject enemyPrefab;
-    public Transform spawnPos;
+    public GameObject enemyWarrPrefab;  // Prefab pro běžného nepřítele (Warrior)
+    public GameObject enemyArcherPrefab; // Prefab pro Archera
+
+    public Transform spawnPosArcher;
+    public Transform spawnPosWarrior;
     private float spawnInterval;
 
     private float targetTime;
@@ -43,7 +46,7 @@ public class EnemyBase : MonoBehaviour
 
     
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(float damage)
     {
         enemyBaseHealth -= damage;
         Debug.Log("Nepřátelská základna dostala damage: " + damage + ". Zbývající HP: " + enemyBaseHealth);
@@ -68,7 +71,23 @@ public class EnemyBase : MonoBehaviour
 
     private void SpawnEnemy()
     {
-        
-        Instantiate(enemyPrefab, spawnPos.position, Quaternion.identity);
+        GameObject enemyToSpawn;
+        Transform spawnPos;
+
+        // 1/3 šance na spawn Archera, jinak se spawne Warrior
+        if (Random.value < 0.33f)
+        {
+            enemyToSpawn = enemyArcherPrefab;
+            spawnPos = spawnPosArcher;
+            Debug.Log("🟢 Spawnován EnemyArcher!");
+        }
+        else
+        {
+            spawnPos = spawnPosWarrior;
+            enemyToSpawn = enemyWarrPrefab;
+            Debug.Log("🔴 Spawnován EnemyWarrior!");
+        }
+
+        Instantiate(enemyToSpawn, spawnPos.position, Quaternion.identity);
     }
 }

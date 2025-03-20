@@ -22,6 +22,7 @@ public class EnemyWizzMovement : MonoBehaviour
 
     public float Speed = 1f;
     private bool canMove = true;
+    private bool isInEnemyBase = false;
 
     //private bool isGrounded;
     //private bool isAttacking;
@@ -29,6 +30,7 @@ public class EnemyWizzMovement : MonoBehaviour
     public bool isPlayerUnit;
     public float hpWarrior = 100;
     public int damage = 20;
+    public int gainCoin = 20;
 
 
     private void Start()
@@ -60,10 +62,14 @@ public class EnemyWizzMovement : MonoBehaviour
 
             timeUntilFire += Time.deltaTime;
 
-            if (timeUntilFire >= 1f / bps)
+            if(hpWarrior>=0)
             {
-                Shoot();
-                timeUntilFire = 0f;
+                if (timeUntilFire >= 1f / bps)
+                {
+                    Shoot();
+                    timeUntilFire = 0f;
+                }
+
             }
         }
 
@@ -95,7 +101,7 @@ public class EnemyWizzMovement : MonoBehaviour
     {
         if (gameObject.CompareTag("EnemyArcher"))
         {
-            transform.position += Vector3.right * Speed * Time.deltaTime;
+            transform.position += Vector3.left * Speed * Time.deltaTime;
 
         }
 
@@ -106,15 +112,15 @@ public class EnemyWizzMovement : MonoBehaviour
     {
         if (collision.gameObject)//Kvuli tomu jde skrz zakladny
         {
-            canMove = true;
+            if (isInEnemyBase == false)
+            {
+                canMove = true;
+            }
 
         }
 
 
-        if (collision.gameObject.CompareTag("BaseHP"))
-        {
-            CancelInvoke(nameof(AttackBase)); // Přestane útočit, pokud se vzdálí
-        }
+
     }
 
 
@@ -127,27 +133,30 @@ public class EnemyWizzMovement : MonoBehaviour
 
         }
 
-
-        Debug.Log("Kolize detekována s: " + boxCollision2D.gameObject.name);
-        if (boxCollision2D.gameObject.CompareTag("Player") && gameObject.CompareTag("EnemyArcher"))
-        {
-
-
-            InvokeRepeating(nameof(ApplyDamage), 0f, 2f);
-
-
-        }
-
-        if (boxCollision2D.gameObject.CompareTag("BaseHP"))
-        {
-            InvokeRepeating(nameof(AttackBase), 0f, 2f); // Útok každé 2 sekundy
-        }
     }
 
-    private void ApplyDamage()
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        TakeDamage(damage);
+        if (collision.gameObject.CompareTag("EnemybaseHP"))
+        {
+            canMove = true;
+            animator.SetBool("isRunning", true);
+
+        }
+
+        if (collision.gameObject.CompareTag("BaseHP"))
+        {
+            canMove = false;
+            animator.SetBool("isRunning", false);
+            isInEnemyBase = true;
+
+            InvokeRepeating(nameof(AttackBase), 0f, 2f); // Útok každé 2 sekundy
+
+        }
+
     }
+
+   
 
     public void TakeDamage(float dmg)
     {
@@ -165,7 +174,8 @@ public class EnemyWizzMovement : MonoBehaviour
     private void Die()
     {
         canMove = false;
-        Destroy(gameObject, 2f); // Zničí objekt po 2s
+        Destroy(gameObject, 1f); // Zničí objekt po 2s
+        GameManager.Instance.AddGold(isPlayerUnit, gainCoin);
     }
 
 

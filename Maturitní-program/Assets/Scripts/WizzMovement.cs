@@ -22,9 +22,9 @@ public class WizzMovement : MonoBehaviour
 
     public float Speed = 1f;
     private bool canMove = true;
+    private bool isInEnemyBase = false;
 
-    //private bool isGrounded;
-    //private bool isAttacking;
+
 
     public bool isPlayerUnit;
     public float hpWarrior = 100;
@@ -47,6 +47,7 @@ public class WizzMovement : MonoBehaviour
         if (target == null)
         {
             FindTarget();
+            CancelInvoke(nameof(AttackEnemy));
             return;
         }
 
@@ -59,14 +60,24 @@ public class WizzMovement : MonoBehaviour
             //LZE UDELAT PRES INVOKE REPEATING!!!!!
 
             timeUntilFire += Time.deltaTime;
-
-            if (timeUntilFire >= 1f / bps)
+            if (hpWarrior >= 0)
             {
-                Shoot();
-                timeUntilFire = 0f;
+                if (timeUntilFire >= 1f / bps)
+                {
+                    Shoot();
+                    InvokeRepeating(nameof(AttackEnemy), 1.5f, 3f);
+                    timeUntilFire = 0f;
+                }
+
             }
         }
 
+    }
+
+    private void AttackEnemy()
+    {
+        animator.SetBool("isAttacking", false); // Spustí animaci útoku
+        
     }
 
     private void Shoot()
@@ -74,6 +85,8 @@ public class WizzMovement : MonoBehaviour
         GameObject arrowObj = Instantiate(arrrowPrefab, firingPoint.position, Quaternion.identity);
         Arrow arrowScript = arrowObj.GetComponent<Arrow>();
         arrowScript.SetTarget(target);
+
+        
     }
 
     private bool CheckTargetIsInRange()
@@ -96,7 +109,7 @@ public class WizzMovement : MonoBehaviour
         if (gameObject.CompareTag("Archer"))
         {
             transform.position += Vector3.right * Speed * Time.deltaTime;
-
+            animator.SetBool("isRunning", true);
         }
 
 
@@ -106,15 +119,13 @@ public class WizzMovement : MonoBehaviour
     {
         if (collision.gameObject)
         {
-            canMove = true;
+            if (isInEnemyBase == false)
+            {
+                canMove = true;
+            }
 
         }
 
-
-        if (collision.gameObject.CompareTag("EnemyBaseHP"))
-        {
-            CancelInvoke(nameof(AttackBase)); // Přestane útočit, pokud se vzdálí
-        }
     }
 
 
@@ -123,32 +134,35 @@ public class WizzMovement : MonoBehaviour
         if (boxCollision2D.gameObject)
         {
             canMove = false;
-
-
-        }
-
-
-        Debug.Log("Kolize detekována s: " + boxCollision2D.gameObject.name);
-        if (boxCollision2D.gameObject.CompareTag("Enemy") && gameObject.CompareTag("Archer"))
-        {
-
-
-            InvokeRepeating(nameof(ApplyDamage), 0f, 2f);
-
+            animator.SetBool("isRunning", false);
 
         }
 
-        if (boxCollision2D.gameObject.CompareTag("EnemyBaseHP"))
-        {
-            InvokeRepeating(nameof(AttackBase), 0f, 2f); // Útok každé 2 sekundy
-        }
+
     }
 
-    private void ApplyDamage()
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        TakeDamage(damage);
+        if (collision.gameObject.CompareTag("BaseHP"))
+        {
+            canMove = true;
+
+
+        }
+
+        if (collision.gameObject.CompareTag("EnemyBaseHP"))
+        {
+            canMove = false;
+            animator.SetBool("isRunning", false);
+            isInEnemyBase = true;
+
+            InvokeRepeating(nameof(AttackBase), 0f, 2f); // Útok každé 2 sekundy
+
+        }
+
     }
 
+    
     public void TakeDamage(float dmg)
     {
 
@@ -165,7 +179,8 @@ public class WizzMovement : MonoBehaviour
     private void Die()
     {
         canMove = false;
-        Destroy(gameObject, 2f); // Zničí objekt po 2s
+        Destroy(gameObject, 1f); // Zničí objekt po 2s
+        animator.SetBool("isDead", true); // Animace smrti
     }
 
 

@@ -100,10 +100,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5365003485b774634b585e61ede1f74b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Speed: 0
+  Speed: 2
   isPlayerUnit: 1
-  hpWarrior: 1000
-  damage: 40
+  hpWarrior: 100
+  damage: 20
 --- !u!50 &3358395738997816460
 Rigidbody2D:
   serializedVersion: 4

@@ -5,86 +5,56 @@ using UnityEngine;
 public class SpawnManager : MonoBehaviour
 {
     public int warriorCost = 20;
-    public int wizzCost = 30;
+    public int archerCost = 30;
 
-    public GameObject warriorPrefab;  // Prefab pro Warriora
-    public GameObject archerPrefab;   // Prefab pro Archera
+    public GameObject warriorPrefab;
+    public GameObject archerPrefab;
 
-    public Transform warriorSpawnPoint; // Místo spawnování Warriora
-    public Transform archerSpawnPoint;  // Místo spawnování Archera
+    public Transform warriorSpawnPoint; // Spawn point pro Warriory
+    public Transform archerSpawnPoint;  // Spawn point pro Archery
 
-    private Queue<GameObject> warriorQueue = new Queue<GameObject>(); // Fronta pro Warriory
-    private Queue<GameObject> archerQueue = new Queue<GameObject>();  // Fronta pro Archery
+    private Queue<(GameObject unit, Transform spawnPoint)> unitQueue = new Queue<(GameObject, Transform)>(); // Fronta jednotek se spawnpointy
+    private bool isSpawning = false;
 
-    
+    public float spawnInterval = 3f; // Časové zpoždění mezi jednotkami
 
-    public float spawnInterval = 10f; // Interval mezi spawny
-
-    private bool isSpawningWarrior = false; // Kontrola spawnování Warriora
-    private bool isSpawningArcher = false;  // Kontrola spawnování Archera
-
-    
-    
     public void SpawnWarrior()
     {
         if (GameManager.Instance.SubtractGold(warriorCost))
         {
-            warriorQueue.Enqueue(warriorPrefab); // Přidá Warriora do fronty
-            TrySpawnWarrior();
+            unitQueue.Enqueue((warriorPrefab, warriorSpawnPoint)); // Přidá Warriora do fronty s jeho spawnpointem
+            TrySpawnUnit();
         }
-        
     }
 
     public void SpawnArcher()
     {
-        if (GameManager.Instance.SubtractGold(wizzCost))
+        if (GameManager.Instance.SubtractGold(archerCost))
         {
-            archerQueue.Enqueue(archerPrefab); // Přidá Archera do fronty
-            TrySpawnArcher();
+            unitQueue.Enqueue((archerPrefab, archerSpawnPoint)); // Přidá Archera do fronty s jeho spawnpointem
+            TrySpawnUnit();
         }
     }
 
-    private void TrySpawnWarrior()
+    private void TrySpawnUnit()
     {
-        if (!isSpawningWarrior && warriorQueue.Count > 0) // Pokud není spuštěné spawnování
+        if (!isSpawning && unitQueue.Count > 0)
         {
-            StartCoroutine(SpawnWarriorRoutine());
+            StartCoroutine(SpawnUnitRoutine());
         }
     }
 
-    private void TrySpawnArcher()
+    private IEnumerator SpawnUnitRoutine()
     {
-        if (!isSpawningArcher && archerQueue.Count > 0) // Pokud není spuštěné spawnování
-        {
-            StartCoroutine(SpawnArcherRoutine());
-        }
-    }
+        isSpawning = true;
 
-    private IEnumerator SpawnWarriorRoutine()
-    {
-        isSpawningWarrior = true; // Zamezí souběžnému spawnu
-
-        while (warriorQueue.Count > 0)
+        while (unitQueue.Count > 0)
         {
-            GameObject unitToSpawn = warriorQueue.Dequeue();
-            Instantiate(unitToSpawn, warriorSpawnPoint.position, Quaternion.identity);
+            var (unitToSpawn, spawnPoint) = unitQueue.Dequeue(); // Vybere jednotku a její spawn point
+            Instantiate(unitToSpawn, spawnPoint.position, Quaternion.identity);
             yield return new WaitForSeconds(spawnInterval);
         }
 
-        isSpawningWarrior = false;
-    }
-
-    private IEnumerator SpawnArcherRoutine()
-    {
-        isSpawningArcher = true; // Zamezí souběžnému spawnu
-
-        while (archerQueue.Count > 0)
-        {
-            GameObject unitToSpawn = archerQueue.Dequeue();
-            Instantiate(unitToSpawn, archerSpawnPoint.position, Quaternion.identity);
-            yield return new WaitForSeconds(spawnInterval);
-        }
-
-        isSpawningArcher = false;
+        isSpawning = false;
     }
 }

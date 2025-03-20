@@ -162,5 +162,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 4271047107400311032}
-  arrowSpeed: 10
+  arrowSpeed: 15
   arrowDamage: 15

@@ -4,14 +4,16 @@ using UnityEngine;
 public class EnemyMove : MonoBehaviour
 {
     private Animator animator;
-    BoxCollider2D boxCollider2D;
+    BoxCollider2D collision;
+    private MonoBehaviour currentEnemy;
 
     public float Speed = 1f;
     private bool canMove = true;
+    private bool isInEnemyBase = false;
 
     public bool isPlayerUnit;
     public float hpWarrior = 100;
-    public int damage = 20;
+    public float damage = 20;
     public int gainCoin = 20;
 
 
@@ -44,16 +46,20 @@ public class EnemyMove : MonoBehaviour
     {
         if (collision.gameObject)
         {
-            canMove = true;
-        }
-        CancelInvoke(nameof(ApplyDamage));
-        CancelInvoke(nameof(AttackEnemy));
+            if (isInEnemyBase == false)
+            {
+                canMove = true;
 
-        animator.SetBool("isAttacking", false);
+                //CancelInvoke(nameof(DealDamage));
+                CancelInvoke(nameof(AttackEnemy));
+
+                animator.SetBool("isAttacking", false);
+            }
+        }
 
     }
 
-    
+
 
     private void OnCollisionEnter2D(Collision2D boxCollision2D)
     {
@@ -66,20 +72,30 @@ public class EnemyMove : MonoBehaviour
 
 
         Debug.Log("Kolize detekována s: " + boxCollision2D.gameObject.name);
-        if (boxCollision2D.gameObject.CompareTag("Player")|| boxCollision2D.gameObject.CompareTag("Archer") && gameObject.CompareTag("Enemy"))
+        if ((boxCollision2D.gameObject.CompareTag("Player") || boxCollision2D.gameObject.CompareTag("Archer")) && gameObject.CompareTag("Enemy"))
         {
-
-            // Pokud jsme útočili na základnu, přestaneme
             CancelInvoke(nameof(AttackBase));
 
-            // Začneme útočit na nepřítele
-            InvokeRepeating(nameof(ApplyDamage), 0f, 1.9f);
-            InvokeRepeating(nameof(AttackEnemy), 0f, 1.9f);
+            // Získání správného nepřítele (buď `Movement` nebo `WizzMovement`)
+            Movement warrior = boxCollision2D.gameObject.GetComponent<Movement>();
+            WizzMovement archer = boxCollision2D.gameObject.GetComponent<WizzMovement>();
 
-
+            if (warrior != null)
+            {
+                currentEnemy = warrior; // Uložíme si Warriora
+                InvokeRepeating(nameof(RepeatDealDamage), 0f, 1.9f); // Opakovaný útok
+                InvokeRepeating(nameof(AttackEnemy), 0f, 1.9f);
+            }
+            else if (archer != null)
+            {
+                currentEnemy = archer; // Uložíme si Archera
+                InvokeRepeating(nameof(RepeatDealDamage), 0f, 1.9f);
+                InvokeRepeating(nameof(AttackEnemy), 0f, 1.9f);
+            }
         }
-        
     }
+
+
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -94,11 +110,12 @@ public class EnemyMove : MonoBehaviour
         {
             canMove = false;
             animator.SetBool("isRunning", false);
+            isInEnemyBase = true;
 
             InvokeRepeating(nameof(AttackBase), 0f, 2f); // Útok každé 2 sekundy
             InvokeRepeating(nameof(AttackEnemy), 0f, 2f);
         }
-        
+
     }
 
     private void AttackEnemy()
@@ -106,15 +123,25 @@ public class EnemyMove : MonoBehaviour
         animator.SetBool("isAttacking", true); // Spustí animaci útoku
     }
 
-    private void StopAttacking()
+    private void RepeatDealDamage()
     {
-        animator.SetBool("isAttacking", false);
+        if (currentEnemy != null)
+        {
+            if (currentEnemy is Movement warrior)
+            {
+                warrior.TakeDamage(damage);
+            }
+            else if (currentEnemy is WizzMovement archer)
+            {
+                archer.TakeDamage(damage);
+            }
+        }
+        else
+        {
+            CancelInvoke(nameof(RepeatDealDamage)); // Pokud nepřítel zmizí, zastav útoky
+        }
     }
 
-    private void ApplyDamage()
-    {
-        TakeDamage(damage);
-    }
 
     public void TakeDamage(float dmg)
     {
@@ -133,7 +160,10 @@ public class EnemyMove : MonoBehaviour
         canMove = false;
         animator.SetBool("isDead", true); // Animace smrti
         Destroy(gameObject, 1f); // Zničí objekt po 1s
-        GameManager.Instance.AddGold(isPlayerUnit,gainCoin);
+        GameManager.Instance.AddGold(isPlayerUnit, gainCoin);
+
+        CancelInvoke(nameof(RepeatDealDamage));
+        CancelInvoke(nameof(AttackBase));
     }
 
     public void AttackBase()

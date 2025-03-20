@@ -1,26 +1,50 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    public TextMeshProUGUI text;
+    public TextMeshProUGUI textGold;
+    public TMP_Text textTime;
 
-
+    public bool timeIsRunning;
+    public float timeRemaining;
 
     private Turret turret;
-
     private WizzMovement wizz;
 
     public int PlayerGold = 100;
+    public int time;
 
 
     private void Start()
     {
-        text.text = PlayerGold.ToString();
+        timeIsRunning = true;
+        textGold.text = PlayerGold.ToString();
+    }
+
+    private void Update()
+    {
+        if(timeIsRunning)
+        {
+            if (timeRemaining >= 0)
+            {
+                timeRemaining += Time.deltaTime;
+                DisplayTime(timeRemaining);
+            }
+        }
+    }
+
+    void DisplayTime(float timeToDisplay)
+    {
+        timeToDisplay += 1;
+        float minutes = Mathf.FloorToInt(timeToDisplay / 60);
+        float seconds = Mathf.FloorToInt(timeToDisplay % 60);
+        textTime.text = string.Format("{0:00}:{1:00}", minutes, seconds);
     }
 
     private void Awake()
@@ -31,11 +55,9 @@ public class GameManager : MonoBehaviour
 
         }
     }
-    /// <summary>
-    /// Checks if the player has enough money and subtracts it if yes
-    /// </summary>
-    /// <param name="gold"></param>
-    /// <returns>True if subtraction was successfull</returns>
+
+    
+
     public bool SubtractGold(int gold)
     {
         if (gold > 0)
@@ -43,7 +65,7 @@ public class GameManager : MonoBehaviour
             if (PlayerGold >= gold)
             {
                 PlayerGold -= gold;
-                text.text = PlayerGold.ToString();
+                textGold.text = PlayerGold.ToString();
                 return true;
 
             }
@@ -65,7 +87,7 @@ public class GameManager : MonoBehaviour
             if (gold > 0)
             {
                 PlayerGold += gold;
-                text.text = PlayerGold.ToString();
+                textGold.text = PlayerGold.ToString();
             }
             else
             {
@@ -96,7 +118,7 @@ public class GameManager : MonoBehaviour
         if (PlayerGold >= upgradeCost && turret != null)
         {
             PlayerGold -= upgradeCost;
-            text.text = PlayerGold.ToString();
+            textGold.text = PlayerGold.ToString();
             turret.IncreaseDamage(10); // Zvýší damage o 10
             Debug.Log("🔼 Turret damage upgradován! Nové damage: " + turret.GetDamage());
         }

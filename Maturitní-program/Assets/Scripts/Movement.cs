@@ -6,16 +6,18 @@ public class Movement : MonoBehaviour
 {
     private Animator animator;
     private Rigidbody2D rb;
+    private MonoBehaviour currentEnemy;
 
 
     public float Speed = 1f;
     private bool canMove = true;
+    private bool isInEnemyBase = false;
 
-    
+
 
     public bool isPlayerUnit;
     public float hpWarrior = 100;
-    public int damage = 20;
+    public float damage = 20;
 
     
     private void Start()
@@ -54,13 +56,17 @@ public class Movement : MonoBehaviour
     {
         if (collision.gameObject)
         {
-            canMove = true;
+            if(isInEnemyBase == false)
+            {
+                canMove = true;
+
+                CancelInvoke(nameof(TakeDamage));
+                CancelInvoke(nameof(AttackEnemy));
+
+                animator.SetBool("isAttacking", false);
+            }
             
         }
-        CancelInvoke(nameof(TakeDamage));
-        CancelInvoke(nameof(AttackEnemy));
-
-        animator.SetBool("isAttacking", false);
 
     }
 
@@ -76,19 +82,36 @@ public class Movement : MonoBehaviour
 
         }
 
-        
 
-        if (boxCollision2D.gameObject.CompareTag("Enemy") && gameObject.CompareTag("Player"))
+
+        if ((boxCollision2D.gameObject.CompareTag("Enemy") || boxCollision2D.gameObject.CompareTag("EnemyArcher")) && gameObject.CompareTag("Player"))
         {
-        
-            // Začneme útočit na nepřítele
-            InvokeRepeating(nameof(ApplyDamage), 0f, 2f);
-        
-            InvokeRepeating(nameof(AttackEnemy),0f,2f);
-        
-        
+
+            CancelInvoke(nameof(AttackBase));
+
+            // Získání správného nepřítele 
+            EnemyMove warrior = boxCollision2D.gameObject.GetComponent<EnemyMove>();
+            EnemyWizzMovement archer = boxCollision2D.gameObject.GetComponent<EnemyWizzMovement>();
+
+            if (warrior != null)
+            {
+                currentEnemy = warrior; // Uložíme si Warriora
+                InvokeRepeating(nameof(RepeatDealDamage), 0f, 1.9f); // Opakovaný útok
+                InvokeRepeating(nameof(AttackEnemy), 0f, 1.9f);
+            }
+            else if (archer != null)
+            {
+                currentEnemy = archer; // Uložíme si Archera
+                InvokeRepeating(nameof(RepeatDealDamage), 0f, 1.9f);
+                InvokeRepeating(nameof(AttackEnemy), 0f, 1.9f);
+            }
         }
 
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -104,6 +127,7 @@ public class Movement : MonoBehaviour
         {
             canMove = false;
             animator.SetBool("isRunning", false);
+            isInEnemyBase = true;
 
             InvokeRepeating(nameof(AttackBase), 0f, 2f); // Útok každé 2 sekundy
             InvokeRepeating(nameof(AttackEnemy), 0f, 2f);
@@ -121,11 +145,25 @@ public class Movement : MonoBehaviour
         animator.SetBool("isAttacking", false);
     }
 
-
-    private void ApplyDamage()
+    private void RepeatDealDamage()
     {
-        TakeDamage(damage);
+        if (currentEnemy != null)
+        {
+            if (currentEnemy is EnemyMove warrior)
+            {
+                warrior.TakeDamage(damage);
+            }
+            else if (currentEnemy is EnemyWizzMovement archer)
+            {
+                archer.TakeDamage(damage);
+            }
+        }
+        else
+        {
+            CancelInvoke(nameof(RepeatDealDamage)); // Pokud nepřítel zmizí, zastav útoky
+        }
     }
+    
 
     public void TakeDamage(float dmg)
     {
@@ -146,12 +184,12 @@ public class Movement : MonoBehaviour
         Destroy(gameObject, 1f); // Zničí objekt po 1s
 
         CancelInvoke(nameof(AttackBase));
-        CancelInvoke(nameof(ApplyDamage));
+        CancelInvoke(nameof(RepeatDealDamage));
     }
 
     public void AttackBase()
     {
-        Base enemyBase = GameObject.FindGameObjectWithTag("EnemyBaseHP").GetComponent<Base>();
+        EnemyBase enemyBase = GameObject.FindGameObjectWithTag("EnemyBaseHP").GetComponent<EnemyBase>();
         if (enemyBase != null)
         {
             enemyBase.TakeDamage(damage);

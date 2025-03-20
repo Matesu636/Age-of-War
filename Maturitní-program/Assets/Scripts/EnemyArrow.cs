@@ -22,6 +22,11 @@ public class EnemyArrow : MonoBehaviour
         Vector2 direction = (target.position - transform.position).normalized;
 
         rb.velocity = direction * arrowSpeed;
+
+        if (target = null)
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -30,8 +35,19 @@ public class EnemyArrow : MonoBehaviour
         Movement enemy = collision.gameObject.GetComponent<Movement>();
         if (enemy != null)
         {
-            Debug.Log("💥 EnemyArrow trefil: " + collision.gameObject.name + " | Poškození: " + arrowDamage);
+            
             enemy.TakeDamage(arrowDamage);
+        }
+        WizzMovement archer = collision.gameObject.GetComponent<WizzMovement>();
+        if (archer != null)
+        {
+
+            archer.TakeDamage(arrowDamage);
+        }
+        Base _base = collision.gameObject.GetComponent<Base>();
+        if (_base != null)
+        {
+            _base.TakeDamage(arrowDamage);
         }
 
         Destroy(gameObject);

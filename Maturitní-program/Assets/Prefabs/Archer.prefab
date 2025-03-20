@@ -178,10 +178,10 @@ MonoBehaviour:
     m_Bits: 8
   arrrowPrefab: {fileID: 7478461112273955191, guid: 76678233cd7bd4cb88c14a68eb0261ce, type: 3}
   firingPoint: {fileID: 2621984527684217424}
-  bps: 0.5
+  bps: 0.3
   Speed: 2
   isPlayerUnit: 1
-  hpWarrior: 100
+  hpWarrior: 1000
   damage: 20
 --- !u!1 &4977762112860925107
 GameObject:

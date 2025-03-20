@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class Base : MonoBehaviour
 {
-    public int baseHealth = 500; // Životy základny
+    public float baseHealth = 500; // Životy základny
     public Slider healthSlider;
 
     private void Start()
@@ -17,7 +17,7 @@ public class Base : MonoBehaviour
             healthSlider.value = baseHealth;
         }
     }
-    public void TakeDamage(int damage)
+    public void TakeDamage(float damage)
     {
         baseHealth -= damage;
         Debug.Log("Nepřátelská základna dostala damage: " + damage + ". Zbývající HP: " + baseHealth);
