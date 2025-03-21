@@ -21,9 +21,9 @@ public class SpawnTurret : MonoBehaviour
 
     public void SpawningTurret()
     {
-        if (gm.PlayerGold > 49)
+        if (gm.PlayerGold > 99)
         {
-            if (GameManager.Instance.SubtractGold(50))
+            if (GameManager.Instance.SubtractGold(100))
 
             {
                 Instantiate(turretGO, spawnPoint.position, Quaternion.identity);

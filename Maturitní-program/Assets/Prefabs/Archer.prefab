@@ -114,7 +114,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!61 &4432293960781188823
 BoxCollider2D:
@@ -177,13 +177,13 @@ MonoBehaviour:
   enemyMask:
     serializedVersion: 2
     m_Bits: 8
-  arrrowPrefab: {fileID: 7478461112273955191, guid: 76678233cd7bd4cb88c14a68eb0261ce, type: 3}
+  arrowPrefab: {fileID: 7478461112273955191, guid: 76678233cd7bd4cb88c14a68eb0261ce, type: 3}
   firingPoint: {fileID: 2621984527684217424}
   bps: 0.3
   Speed: 2
   isPlayerUnit: 1
-  hpWarrior: 1000
-  damage: 20
+  hpWarrior: 100
+  damage: 15
 --- !u!95 &8611693464924052770
 Animator:
   serializedVersion: 5

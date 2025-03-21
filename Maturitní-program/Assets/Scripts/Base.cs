@@ -9,6 +9,8 @@ public class Base : MonoBehaviour
     public float baseHealth = 500; // Životy základny
     public Slider healthSlider;
 
+    public GameObject loseScreen;
+
     private void Start()
     {
         if (healthSlider != null)
@@ -37,7 +39,8 @@ public class Base : MonoBehaviour
     {
         Debug.Log("Nepřátelská základna byla zničena!");
         Destroy(gameObject); // Zničí základnu
-        SceneManager.LoadScene(0);
+        loseScreen.gameObject.SetActive(true);
+        Time.timeScale = 0f;
 
     }
 }

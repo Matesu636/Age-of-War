@@ -1,108 +1,91 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 
 public class WizzMovement : MonoBehaviour
 {
     private Animator animator;
-    BoxCollider2D boxCollider2D;
-
 
     [SerializeField] private float targetingRange = 10f;
     [SerializeField] private LayerMask enemyMask;
     private Transform target;
 
-    [SerializeField] private GameObject arrrowPrefab;
+    [SerializeField] private GameObject arrowPrefab;
     [SerializeField] private Transform firingPoint;
 
-    [SerializeField] private float bps = 2f; //LZE UDELAT PRES INVOKE REPEATING!!!!!
+    [SerializeField] private float bps = 2f;
     private float timeUntilFire;
-
 
     public float Speed = 1f;
     private bool canMove = true;
     private bool isInEnemyBase = false;
-
-
+    private bool attackingBase = false;
 
     public bool isPlayerUnit;
     public float hpWarrior = 100;
     public int damage = 20;
 
-
     private void Start()
     {
-
         animator = GetComponent<Animator>();
-
+        InvokeRepeating(nameof(FindTarget), 0f, 0.5f);
     }
-    // Update is called once per frame
+
     void Update()
     {
         if (canMove)
         {
             Move();
         }
+
         if (target == null)
         {
-            FindTarget();
-            CancelInvoke(nameof(AttackEnemy));
+            animator.SetBool("isAttacking", false);
             return;
         }
-
-        if (!CheckTargetIsInRange())
+        if (!CheckTargetInRange())
         {
             target = null;
         }
         else
         {
-            //LZE UDELAT PRES INVOKE REPEATING!!!!!
-
             timeUntilFire += Time.deltaTime;
-            if (hpWarrior >= 0)
+            if (hpWarrior > 0 && timeUntilFire >= 1f / bps)
             {
-                if (timeUntilFire >= 1f / bps)
-                {
-                    Shoot();
-                    InvokeRepeating(nameof(AttackEnemy), 0f, 3f);
-                    
-                    timeUntilFire = 0f;
-                }
-
+                Shoot();
+                animator.SetBool("isAttacking", true);
+                timeUntilFire = 0f;
             }
         }
-
-    }
-
-    private void AttackEnemy()
-    {
-        animator.SetBool("isAttacking", true); // Spustí animaci útoku
-        
     }
 
     private void Shoot()
     {
-        GameObject arrowObj = Instantiate(arrrowPrefab, firingPoint.position, Quaternion.identity);
+        if (target == null) return;
+
+        GameObject arrowObj = Instantiate(arrowPrefab, firingPoint.position, Quaternion.identity);
         Arrow arrowScript = arrowObj.GetComponent<Arrow>();
         arrowScript.SetTarget(target);
-
-        
-    }
-
-    private bool CheckTargetIsInRange()
-    {
-        return Vector2.Distance(target.position, transform.position) <= targetingRange;
     }
 
     private void FindTarget()
     {
-        RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, targetingRange, (Vector2)transform.position, 0f, enemyMask);
+        RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, targetingRange, Vector2.zero, 0f, enemyMask);
 
         if (hits.Length > 0)
         {
             target = hits[0].transform;
+            StopAttackingBase(); // okamžitě přestat útočit na základnu
         }
+        else if (isInEnemyBase && target == null && !attackingBase)
+        {
+            StartAttackingBase();
+        }
+    }
+
+    private bool CheckTargetInRange()
+    {
+        return target != null && Vector2.Distance(transform.position, target.position) <= targetingRange;
     }
 
     private void Move()
@@ -112,8 +95,6 @@ public class WizzMovement : MonoBehaviour
             transform.position += Vector3.right * Speed * Time.deltaTime;
             animator.SetBool("isRunning", true);
         }
-
-
     }
 
     private void OnCollisionExit2D(Collision2D collision)
@@ -124,78 +105,76 @@ public class WizzMovement : MonoBehaviour
             {
                 canMove = true;
             }
-
         }
-
     }
 
-
-    private void OnCollisionEnter2D(Collision2D boxCollision2D)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (boxCollision2D.gameObject)
+        if (collision.gameObject)
         {
             canMove = false;
             animator.SetBool("isRunning", false);
-
         }
-
-
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("BaseHP"))
-        {
-            canMove = true;
-
-
-        }
-
-        if (collision.gameObject.CompareTag("EnemyBaseHP"))
+        if (collision.CompareTag("EnemyBaseHP"))
         {
             canMove = false;
             animator.SetBool("isRunning", false);
             isInEnemyBase = true;
 
-            InvokeRepeating(nameof(AttackBase), 0f, 2f); // Útok každé 2 sekundy
-
+            if (target == null)
+                StartAttackingBase();
         }
-
     }
 
-    
-    public void TakeDamage(float dmg)
+    private void OnTriggerExit2D(Collider2D collision)
     {
-
-        hpWarrior -= dmg;
-
-        if (hpWarrior <= 0)
+        if (collision.CompareTag("EnemyBaseHP"))
         {
-
-            Die();
+            isInEnemyBase = false;
+            StopAttackingBase();
         }
-
     }
 
-    private void Die()
+    private void StartAttackingBase()
     {
-        canMove = false;
-        Destroy(gameObject, 1f); // Zničí objekt po 2s
-        animator.SetBool("isDead", true); // Animace smrti
+        attackingBase = true;
+        InvokeRepeating(nameof(AttackBase), 0f, 2f);
     }
 
-
+    private void StopAttackingBase()
+    {
+        attackingBase = false;
+        CancelInvoke(nameof(AttackBase));
+    }
 
     public void AttackBase()
     {
-        EnemyBase enemyBase = GameObject.FindGameObjectWithTag("EnemyBaseHP").GetComponent<EnemyBase>();
+        if (target != null) return; // pokud máme nepřítele, na základnu neútočíme
+
+        EnemyBase enemyBase = GameObject.FindGameObjectWithTag("EnemyBaseHP")?.GetComponent<EnemyBase>();
         if (enemyBase != null)
         {
             enemyBase.TakeDamage(damage);
         }
     }
 
+    public void TakeDamage(float dmg)
+    {
+        hpWarrior -= dmg;
+        if (hpWarrior <= 0)
+        {
+            Die();
+        }
+    }
 
-
-
+    private void Die()
+    {
+        canMove = false;
+        animator.SetBool("isDead", true);
+        Destroy(gameObject, 1f);
+    }
 }

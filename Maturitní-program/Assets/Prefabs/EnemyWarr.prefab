@@ -174,9 +174,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Speed: 2
   isPlayerUnit: 0
-  hpWarrior: 100
+  hpWarrior: 150
   damage: 20
-  gainCoin: 20
+  gainCoin: 35
 --- !u!95 &2109778880219692635
 Animator:
   serializedVersion: 5

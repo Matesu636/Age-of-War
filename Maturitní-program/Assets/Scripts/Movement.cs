@@ -19,7 +19,7 @@ public class Movement : MonoBehaviour
     public float hpWarrior = 100;
     public float damage = 20;
 
-    
+
     private void Start()
     {
 
@@ -39,7 +39,7 @@ public class Movement : MonoBehaviour
 
     }
 
-    
+
 
     private void Move()
     {
@@ -56,21 +56,30 @@ public class Movement : MonoBehaviour
     {
         if (collision.gameObject)
         {
-            if(isInEnemyBase == false)
+            if (isInEnemyBase == false)
             {
                 canMove = true;
 
-                CancelInvoke(nameof(TakeDamage));
+
                 CancelInvoke(nameof(AttackEnemy));
 
                 animator.SetBool("isAttacking", false);
             }
-            
+            if (isInEnemyBase == true)
+            {
+                canMove = false;
+
+                InvokeRepeating(nameof(RepeatDealDamage), 0f, 1.9f); // Opakovaný útok
+                InvokeRepeating(nameof(AttackBase), 0f, 1.9f);
+
+                animator.SetBool("isAttacking", true);
+            }
+
         }
 
     }
 
-    
+
 
 
     private void OnCollisionEnter2D(Collision2D boxCollision2D)
@@ -109,10 +118,6 @@ public class Movement : MonoBehaviour
 
     }
 
-    private void OnTriggerStay2D(Collider2D collision)
-    {
-        
-    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -163,7 +168,7 @@ public class Movement : MonoBehaviour
             CancelInvoke(nameof(RepeatDealDamage)); // Pokud nepřítel zmizí, zastav útoky
         }
     }
-    
+
 
     public void TakeDamage(float dmg)
     {
@@ -171,7 +176,7 @@ public class Movement : MonoBehaviour
         hpWarrior -= dmg;
         if (hpWarrior <= 0)
         {
-            
+
             Die();
         }
 

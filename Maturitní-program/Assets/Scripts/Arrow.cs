@@ -5,7 +5,7 @@ using UnityEngine;
 public class Arrow : MonoBehaviour
 {
     private Transform target;
-    
+
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private float arrowSpeed = 5f;
     [SerializeField] private float arrowDamage = 15;
@@ -14,7 +14,7 @@ public class Arrow : MonoBehaviour
     {
         target = _target;
     }
-     
+
     private void FixedUpdate()
     {
         if (!target) return;
@@ -23,7 +23,7 @@ public class Arrow : MonoBehaviour
 
         rb.velocity = direction * arrowSpeed;
 
-        if(target=null)
+        if (target == null)
         {
             Destroy(gameObject);
         }
@@ -31,20 +31,20 @@ public class Arrow : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-       
-       EnemyMove enemy = collision.gameObject.GetComponent<EnemyMove>();
-       if (enemy != null)
-       {
-           enemy.TakeDamage(arrowDamage);
-       }
+        if (collision.transform != target) return; // 💥 pouze cíl, na který letím
 
+        EnemyMove enemy = collision.gameObject.GetComponent<EnemyMove>();
+        if (enemy != null)
+        {
+
+            enemy.TakeDamage(arrowDamage);
+        }
         EnemyWizzMovement archer = collision.gameObject.GetComponent<EnemyWizzMovement>();
         if (archer != null)
         {
 
             archer.TakeDamage(arrowDamage);
         }
-
         EnemyBase _base = collision.gameObject.GetComponent<EnemyBase>();
         if (_base != null)
         {

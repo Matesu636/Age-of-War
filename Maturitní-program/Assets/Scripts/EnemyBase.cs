@@ -13,6 +13,8 @@ public class EnemyBase : MonoBehaviour
     public GameObject enemyWarrPrefab;  // Prefab pro běžného nepřítele (Warrior)
     public GameObject enemyArcherPrefab; // Prefab pro Archera
 
+    public GameObject winScreen;
+
     public Transform spawnPosArcher;
     public Transform spawnPosWarrior;
     private float spawnInterval;
@@ -66,7 +68,8 @@ public class EnemyBase : MonoBehaviour
     {
         Debug.Log("Nepřátelská základna byla zničena!");
         Destroy(gameObject); // Zničí základnu
-        SceneManager.LoadScene(0);
+        winScreen.gameObject.SetActive(true);
+        Time.timeScale = 0f;//Zasdtaví čas
     }
 
     private void SpawnEnemy()

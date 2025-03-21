@@ -55,6 +55,15 @@ public class EnemyMove : MonoBehaviour
 
                 animator.SetBool("isAttacking", false);
             }
+            if (isInEnemyBase == true)
+            {
+                canMove = false;
+
+                InvokeRepeating(nameof(RepeatDealDamage), 0f, 1.9f); // Opakovaný útok
+                InvokeRepeating(nameof(AttackBase), 0f, 1.9f);
+
+                animator.SetBool("isAttacking", true);
+            }
         }
 
     }
@@ -99,7 +108,7 @@ public class EnemyMove : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("EnemybaseHP"))
+        if (collision.gameObject.CompareTag("EnemyBaseHP"))
         {
             canMove = true;
             animator.SetBool("isRunning", true);
