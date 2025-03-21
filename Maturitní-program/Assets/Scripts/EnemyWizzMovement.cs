@@ -49,6 +49,7 @@ public class EnemyWizzMovement : MonoBehaviour
         if (target == null)
         {
             FindTarget();
+            CancelInvoke(nameof(AttackEnemy));
             return;
         }
 
@@ -67,11 +68,18 @@ public class EnemyWizzMovement : MonoBehaviour
                 if (timeUntilFire >= 1f / bps)
                 {
                     Shoot();
+                    InvokeRepeating(nameof(AttackEnemy), 0f, 3f);
                     timeUntilFire = 0f;
                 }
 
             }
         }
+
+    }
+
+    private void AttackEnemy()
+    {
+        animator.SetBool("isAttacking", true); // Spustí animaci útoku
 
     }
 
@@ -102,7 +110,7 @@ public class EnemyWizzMovement : MonoBehaviour
         if (gameObject.CompareTag("EnemyArcher"))
         {
             transform.position += Vector3.left * Speed * Time.deltaTime;
-
+            animator.SetBool("isRunning", true);
         }
 
 
@@ -129,7 +137,7 @@ public class EnemyWizzMovement : MonoBehaviour
         if (boxCollision2D.gameObject)
         {
             canMove = false;
-
+            animator.SetBool("isRunning", false);
 
         }
 
@@ -176,6 +184,7 @@ public class EnemyWizzMovement : MonoBehaviour
         canMove = false;
         Destroy(gameObject, 1f); // Zničí objekt po 2s
         GameManager.Instance.AddGold(isPlayerUnit, gainCoin);
+        animator.SetBool("isDead", true); // Animace smrti
     }
 
 

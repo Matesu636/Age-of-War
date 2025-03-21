@@ -65,7 +65,8 @@ public class WizzMovement : MonoBehaviour
                 if (timeUntilFire >= 1f / bps)
                 {
                     Shoot();
-                    InvokeRepeating(nameof(AttackEnemy), 1.5f, 3f);
+                    InvokeRepeating(nameof(AttackEnemy), 0f, 3f);
+                    
                     timeUntilFire = 0f;
                 }
 
@@ -76,7 +77,7 @@ public class WizzMovement : MonoBehaviour
 
     private void AttackEnemy()
     {
-        animator.SetBool("isAttacking", false); // Spustí animaci útoku
+        animator.SetBool("isAttacking", true); // Spustí animaci útoku
         
     }
 
