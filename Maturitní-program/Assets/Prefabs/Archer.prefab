@@ -176,7 +176,7 @@ MonoBehaviour:
   targetingRange: 10
   enemyMask:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 520
   arrowPrefab: {fileID: 7478461112273955191, guid: 76678233cd7bd4cb88c14a68eb0261ce, type: 3}
   firingPoint: {fileID: 2621984527684217424}
   bps: 0.3

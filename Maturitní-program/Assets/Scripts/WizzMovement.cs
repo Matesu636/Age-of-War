@@ -19,7 +19,6 @@ public class WizzMovement : MonoBehaviour
     public float Speed = 1f;
     private bool canMove = true;
     private bool isInEnemyBase = false;
-    private bool attackingBase = false;
 
     public bool isPlayerUnit;
     public float hpWarrior = 100;
@@ -28,7 +27,7 @@ public class WizzMovement : MonoBehaviour
     private void Start()
     {
         animator = GetComponent<Animator>();
-        InvokeRepeating(nameof(FindTarget), 0f, 0.5f);
+        InvokeRepeating(nameof(FindTarget), 0f, 1);
     }
 
     void Update()
@@ -75,12 +74,8 @@ public class WizzMovement : MonoBehaviour
         if (hits.Length > 0)
         {
             target = hits[0].transform;
-            StopAttackingBase(); // okamžitě přestat útočit na základnu
         }
-        else if (isInEnemyBase && target == null && !attackingBase)
-        {
-            StartAttackingBase();
-        }
+        
     }
 
     private bool CheckTargetInRange()
@@ -125,8 +120,6 @@ public class WizzMovement : MonoBehaviour
             animator.SetBool("isRunning", false);
             isInEnemyBase = true;
 
-            if (target == null)
-                StartAttackingBase();
         }
     }
 
@@ -135,32 +128,11 @@ public class WizzMovement : MonoBehaviour
         if (collision.CompareTag("EnemyBaseHP"))
         {
             isInEnemyBase = false;
-            StopAttackingBase();
+            
         }
     }
 
-    private void StartAttackingBase()
-    {
-        attackingBase = true;
-        InvokeRepeating(nameof(AttackBase), 0f, 2f);
-    }
-
-    private void StopAttackingBase()
-    {
-        attackingBase = false;
-        CancelInvoke(nameof(AttackBase));
-    }
-
-    public void AttackBase()
-    {
-        if (target != null) return; // pokud máme nepřítele, na základnu neútočíme
-
-        EnemyBase enemyBase = GameObject.FindGameObjectWithTag("EnemyBaseHP")?.GetComponent<EnemyBase>();
-        if (enemyBase != null)
-        {
-            enemyBase.TakeDamage(damage);
-        }
-    }
+    
 
     public void TakeDamage(float dmg)
     {

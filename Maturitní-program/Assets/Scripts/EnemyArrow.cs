@@ -17,16 +17,16 @@ public class EnemyArrow : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!target) return;
+        if (target == null)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
         Vector2 direction = (target.position - transform.position).normalized;
 
         rb.velocity = direction * arrowSpeed;
 
-        if (target == null)
-        {
-            Destroy(gameObject);
-        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

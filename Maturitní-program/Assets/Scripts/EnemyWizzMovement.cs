@@ -19,7 +19,6 @@ public class EnemyWizzMovement : MonoBehaviour
     public float Speed = 1f;
     private bool canMove = true;
     private bool isInPlayerBase = false;
-    private bool attackingBase = false;
 
     public bool isPlayerUnit;
     public float hpWarrior = 100;
@@ -29,7 +28,7 @@ public class EnemyWizzMovement : MonoBehaviour
     private void Start()
     {
         animator = GetComponent<Animator>();
-        InvokeRepeating(nameof(FindTarget), 0f, 0.5f); // hledání hráčských jednotek
+        InvokeRepeating(nameof(FindTarget),0f,1);
     }
 
     private void Update()
@@ -81,12 +80,8 @@ public class EnemyWizzMovement : MonoBehaviour
         if (hits.Length > 0)
         {
             target = hits[0].transform;
-            StopAttackingBase(); // přestane útočit na hráčskou základnu
         }
-        else if (isInPlayerBase && target == null && !attackingBase)
-        {
-            StartAttackingBase(); // znovu útočí na základnu
-        }
+        
     }
 
     private void Move()
@@ -126,10 +121,6 @@ public class EnemyWizzMovement : MonoBehaviour
             animator.SetBool("isRunning", false);
             isInPlayerBase = true;
 
-            if (target == null)
-            {
-                StartAttackingBase();
-            }
         }
     }
 
@@ -138,30 +129,7 @@ public class EnemyWizzMovement : MonoBehaviour
         if (collision.CompareTag("BaseHP"))
         {
             isInPlayerBase = false;
-            StopAttackingBase();
-        }
-    }
-
-    private void StartAttackingBase()
-    {
-        attackingBase = true;
-        InvokeRepeating(nameof(AttackBase), 0f, 2f);
-    }
-
-    private void StopAttackingBase()
-    {
-        attackingBase = false;
-        CancelInvoke(nameof(AttackBase));
-    }
-
-    public void AttackBase()
-    {
-        if (target != null) return; // pokud má cíl, neútočí na základnu
-
-        Base _base = GameObject.FindGameObjectWithTag("BaseHP")?.GetComponent<Base>();
-        if (_base != null)
-        {
-            _base.TakeDamage(damage);
+           
         }
     }
 
