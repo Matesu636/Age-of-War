@@ -8,6 +8,7 @@ public class MainMenu : MonoBehaviour
     public void PlayGame()
     {
         SceneManager.LoadSceneAsync (1);
+        PlayerPrefs.DeleteKey("SavedTime");
     }
 
     public void QuitGame()

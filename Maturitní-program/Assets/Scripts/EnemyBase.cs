@@ -9,11 +9,12 @@ public class EnemyBase : MonoBehaviour
     public float enemyBaseHealth = 500; // Životy základny
     public Slider healthSlider;
 
+    public int maxInterval = 15;
 
     public GameObject enemyWarrPrefab;  // Prefab pro běžného nepřítele (Warrior)
     public GameObject enemyArcherPrefab; // Prefab pro Archera
 
-    public GameObject winScreen;
+
 
     public Transform spawnPosArcher;
     public Transform spawnPosWarrior;
@@ -24,7 +25,9 @@ public class EnemyBase : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        int destroyed = PlayerPrefs.GetInt("BasesDestroyed", 0);
+        maxInterval = maxInterval - destroyed * 2;
+
         targetTime = 3;
 
         if (healthSlider != null)
@@ -39,14 +42,14 @@ public class EnemyBase : MonoBehaviour
         if (targetTime <= 0)
         {
             SpawnEnemy();
-            targetTime = Random.Range(5, 15);
-            
+            targetTime = Random.Range(5, maxInterval);
+
         }
         //Debug.Log(targetTime);
 
     }
 
-    
+
 
     public void TakeDamage(float damage)
     {
@@ -64,12 +67,23 @@ public class EnemyBase : MonoBehaviour
         }
     }
 
+
+
     void DestroyBase()
     {
         Debug.Log("Nepřátelská základna byla zničena!");
-        Destroy(gameObject); // Zničí základnu
-        winScreen.gameObject.SetActive(true);
-        Time.timeScale = 0f;//Zasdtaví čas
+        Destroy(gameObject);
+
+        //  Zvětšíme počítadlo zničených základen
+        int destroyed = PlayerPrefs.GetInt("BasesDestroyed", 0);
+        destroyed++;
+        PlayerPrefs.SetInt("BasesDestroyed", destroyed);
+        PlayerPrefs.Save();
+
+        //  Načteme scénu znovu nebo přeskočíme na další fázi
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
+        PlayerPrefs.SetFloat("SavedTime", GameManager.Instance.timeRemaining);
     }
 
     private void SpawnEnemy()

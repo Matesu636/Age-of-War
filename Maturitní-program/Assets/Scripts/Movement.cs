@@ -8,6 +8,7 @@ public class Movement : MonoBehaviour
     private Rigidbody2D rb;
     private MonoBehaviour currentEnemy;
 
+    public bool isPlayerUnit;
 
     public float Speed = 1f;
     private bool canMove = true;
@@ -15,7 +16,6 @@ public class Movement : MonoBehaviour
 
 
 
-    public bool isPlayerUnit;
     public float hpWarrior = 100;
     public float damage = 20;
 
@@ -24,7 +24,7 @@ public class Movement : MonoBehaviour
     {
 
         animator = GetComponent<Animator>();
-        rb = GetComponent<Rigidbody2D>();
+        
 
     }
     // Update is called once per frame

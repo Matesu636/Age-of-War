@@ -19,6 +19,8 @@ public class EnemyMove : MonoBehaviour
 
     private void Start()
     {
+        int destroyed = PlayerPrefs.GetInt("BasesDestroyed", 0);
+        damage = damage + destroyed * 5;
         animator = GetComponent<Animator>();
     }
 

@@ -168,7 +168,7 @@ MonoBehaviour:
   enemyMask:
     serializedVersion: 2
     m_Bits: 8
-  targetingRange: 15
+  targetingRange: 10
   rotationSpeed: 200
   bulletDamage: 20
   bulletPrefab: {fileID: 6473169400837467528, guid: 94536bca8f23a4571af75ce4d9f0ffe1, type: 3}

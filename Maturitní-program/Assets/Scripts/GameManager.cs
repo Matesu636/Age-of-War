@@ -6,6 +6,9 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
+    public GameObject[] backgroundVariants; // 4 různé pozadí
+    public GameObject winPanel;
+
     public static GameManager Instance;
 
     public TextMeshProUGUI textGold;
@@ -24,7 +27,32 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         timeIsRunning = true;
+        timeRemaining = PlayerPrefs.GetFloat("SavedTime", 0f);
+
         textGold.text = PlayerGold.ToString();
+
+        int destroyed = PlayerPrefs.GetInt("BasesDestroyed", 0);
+
+        //  Nastaví pozadí podle fáze
+        for (int i = 0; i < backgroundVariants.Length; i++)
+        {
+            backgroundVariants[i].SetActive(i == destroyed);
+        }
+
+
+        // ✅ Výhra po 4. fázi
+        if (destroyed >= 4)
+        {
+            if (winPanel != null)
+            {
+                winPanel.SetActive(true);
+            }
+            Time.timeScale = 0f;
+
+            // Resetuj pro příště (volitelné)
+            PlayerPrefs.DeleteKey("BasesDestroyed");
+            PlayerPrefs.DeleteKey("SavedTime");
+        }
     }
 
     private void Update()
