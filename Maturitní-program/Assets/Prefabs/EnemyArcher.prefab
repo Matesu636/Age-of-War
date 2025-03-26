@@ -183,8 +183,8 @@ MonoBehaviour:
   Speed: 2
   isPlayerUnit: 0
   hpWarrior: 100
-  damage: 20
-  gainCoin: 20
+  damage: 10
+  gainCoin: 45
 --- !u!95 &2558646156401204325
 Animator:
   serializedVersion: 5

@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
     public float timeRemaining;
 
     private Turret turret;
-    private WizzMovement wizz;
+    private ArcherMovement wizz;
 
     public int PlayerGold = 100;
     public int time;
@@ -29,9 +29,11 @@ public class GameManager : MonoBehaviour
         timeIsRunning = true;
         timeRemaining = PlayerPrefs.GetFloat("SavedTime", 0f);
 
-        textGold.text = PlayerGold.ToString();
 
         int destroyed = PlayerPrefs.GetInt("BasesDestroyed", 0);
+
+        PlayerGold = PlayerGold + destroyed * 45;
+        textGold.text = PlayerGold.ToString();
 
         //  Nastaví pozadí podle fáze
         for (int i = 0; i < backgroundVariants.Length; i++)
@@ -40,7 +42,7 @@ public class GameManager : MonoBehaviour
         }
 
 
-        // ✅ Výhra po 4. fázi
+        //  Výhra po 4. fázi
         if (destroyed >= 4)
         {
             if (winPanel != null)
@@ -49,7 +51,7 @@ public class GameManager : MonoBehaviour
             }
             Time.timeScale = 0f;
 
-            // Resetuj pro příště (volitelné)
+            // Resetuj pro příště 
             PlayerPrefs.DeleteKey("BasesDestroyed");
             PlayerPrefs.DeleteKey("SavedTime");
         }
@@ -132,7 +134,7 @@ public class GameManager : MonoBehaviour
         turret = t;
     }
 
-    public void SetWizz(WizzMovement w)
+    public void SetWizz(ArcherMovement w)
     {
         wizz = w;
     }
@@ -148,7 +150,7 @@ public class GameManager : MonoBehaviour
             PlayerGold -= upgradeCost;
             textGold.text = PlayerGold.ToString();
             turret.IncreaseDamage(10); // Zvýší damage o 10
-            Debug.Log("🔼 Turret damage upgradován! Nové damage: " + turret.GetDamage());
+            Debug.Log(" Turret damage upgradován! Nové damage: " + turret.GetDamage());
         }
         else
         {

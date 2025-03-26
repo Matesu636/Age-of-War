@@ -2444,7 +2444,7 @@ GameObject:
   - component: {fileID: 562048096}
   - component: {fileID: 562048095}
   m_Layer: 5
-  m_Name: ButtonWizard
+  m_Name: ButtonArcher
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

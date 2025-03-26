@@ -29,7 +29,7 @@ public class CameraScript : MonoBehaviour
         
         if (mouseY > screenHeight - yEdgeThreshold)
         {
-            return; // Pokud je myš v horním 50px pásmu, nepohybuj kamerou
+            return; // Pokud je myš v horním 50px pásmu, nepohybuje se kamera
         }
 
         // Pohyb doprava

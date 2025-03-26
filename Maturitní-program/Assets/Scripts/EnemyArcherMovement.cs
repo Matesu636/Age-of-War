@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WizzMovement : MonoBehaviour
+public class EnemyArcherMovement : MonoBehaviour
 {
     private Animator animator;
 
@@ -18,22 +18,21 @@ public class WizzMovement : MonoBehaviour
 
     public float Speed = 1f;
     private bool canMove = true;
-    private bool isInEnemyBase = false;
+    private bool isInPlayerBase = false;
+    private bool isDead = false;
 
     public bool isPlayerUnit;
     public float hpWarrior = 100;
     public int damage = 20;
+    public int gainCoin = 20;
 
     private void Start()
     {
-        int destroyed = PlayerPrefs.GetInt("BasesDestroyed", 0);
-        damage = damage + destroyed * 5;
-
         animator = GetComponent<Animator>();
-        InvokeRepeating(nameof(FindTarget), 0f, 1);
+        InvokeRepeating(nameof(FindTarget),0f,1);
     }
 
-    void Update()
+    private void Update()
     {
         if (canMove)
         {
@@ -45,7 +44,7 @@ public class WizzMovement : MonoBehaviour
             animator.SetBool("isAttacking", false);
             return;
         }
-        if (!CheckTargetInRange())
+        if (!CheckTargetIsInRange())
         {
             target = null;
         }
@@ -66,40 +65,68 @@ public class WizzMovement : MonoBehaviour
         if (target == null) return;
 
         GameObject arrowObj = Instantiate(arrowPrefab, firingPoint.position, Quaternion.identity);
-        Arrow arrowScript = arrowObj.GetComponent<Arrow>();
+        EnemyArrow arrowScript = arrowObj.GetComponent<EnemyArrow>();
         arrowScript.SetTarget(target);
     }
 
-    private void FindTarget()
-    {
-        RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, targetingRange, Vector2.zero, 0f, enemyMask);
-
-        if (hits.Length > 0)
-        {
-            target = hits[0].transform;
-        }
-        
-    }
-
-    private bool CheckTargetInRange()
+    private bool CheckTargetIsInRange()
     {
         return target != null && Vector2.Distance(transform.position, target.position) <= targetingRange;
     }
 
+    private void FindTarget()
+    {
+        //  Nejprve najde nejbližšího nepřítele
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, targetingRange, enemyMask);
+
+        float closestDistance = Mathf.Infinity;
+        Transform closestEnemy = null;
+
+        foreach (var enemy in enemies)
+        {
+            if (enemy.CompareTag("Player") || enemy.CompareTag("Archer"))
+            {
+                float distance = Vector2.Distance(transform.position, enemy.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestEnemy = enemy.transform;
+                }
+            }
+        }
+
+        if (closestEnemy != null)
+        {
+            target = closestEnemy;
+            return; // ✅ Útoč na nepřítele
+        }
+
+        // 2. Pokud není nepřítel, najdi EnemyBase
+        GameObject baseObj = GameObject.FindGameObjectWithTag("BaseHP");
+        if (baseObj != null && Vector2.Distance(transform.position, baseObj.transform.position) <= targetingRange)
+        {
+            target = baseObj.transform; // Útočí na základnu
+        }
+        else
+        {
+            target = null;
+        }
+    }
+
     private void Move()
     {
-        if (gameObject.CompareTag("Archer"))
+        if (gameObject.CompareTag("EnemyArcher"))
         {
-            transform.position += Vector3.right * Speed * Time.deltaTime;
+            transform.position += Vector3.left * Speed * Time.deltaTime;
             animator.SetBool("isRunning", true);
         }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject)
+        if(collision.gameObject)
         {
-            if (isInEnemyBase == false)
+            if(isInPlayerBase == false)
             {
                 canMove = true;
             }
@@ -117,25 +144,23 @@ public class WizzMovement : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("EnemyBaseHP"))
+        if (collision.CompareTag("BaseHP"))
         {
             canMove = false;
             animator.SetBool("isRunning", false);
-            isInEnemyBase = true;
+            isInPlayerBase = true;
 
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.CompareTag("EnemyBaseHP"))
+        if (collision.CompareTag("BaseHP"))
         {
-            isInEnemyBase = false;
-            
+            isInPlayerBase = false;
+           
         }
     }
-
-    
 
     public void TakeDamage(float dmg)
     {
@@ -148,8 +173,12 @@ public class WizzMovement : MonoBehaviour
 
     private void Die()
     {
+        if (isDead) return; // Zabrání opakovanému volání
+        isDead = true;
+
         canMove = false;
-        animator.SetBool("isDead", true);
         Destroy(gameObject, 1f);
+        GameManager.Instance.AddGold(isPlayerUnit, gainCoin);
+        animator.SetBool("isDead", true);
     }
 }

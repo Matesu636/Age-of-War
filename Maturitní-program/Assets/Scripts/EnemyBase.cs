@@ -18,7 +18,6 @@ public class EnemyBase : MonoBehaviour
 
     public Transform spawnPosArcher;
     public Transform spawnPosWarrior;
-    private float spawnInterval;
 
     private float targetTime;
 
@@ -96,13 +95,13 @@ public class EnemyBase : MonoBehaviour
         {
             enemyToSpawn = enemyArcherPrefab;
             spawnPos = spawnPosArcher;
-            Debug.Log("🟢 Spawnován EnemyArcher!");
+            Debug.Log("Spawnován EnemyArcher!");
         }
         else
         {
             spawnPos = spawnPosWarrior;
             enemyToSpawn = enemyWarrPrefab;
-            Debug.Log("🔴 Spawnován EnemyWarrior!");
+            Debug.Log("Spawnován EnemyWarrior!");
         }
 
         Instantiate(enemyToSpawn, spawnPos.position, Quaternion.identity);

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyWizzMovement : MonoBehaviour
+public class ArcherMovement : MonoBehaviour
 {
     private Animator animator;
 
@@ -18,20 +18,22 @@ public class EnemyWizzMovement : MonoBehaviour
 
     public float Speed = 1f;
     private bool canMove = true;
-    private bool isInPlayerBase = false;
+    private bool isInEnemyBase = false;
 
     public bool isPlayerUnit;
     public float hpWarrior = 100;
     public int damage = 20;
-    public int gainCoin = 20;
 
     private void Start()
     {
+        int destroyed = PlayerPrefs.GetInt("BasesDestroyed", 0);
+        damage = damage + destroyed * 5;
+
         animator = GetComponent<Animator>();
-        InvokeRepeating(nameof(FindTarget),0f,1);
+        InvokeRepeating(nameof(FindTarget), 0f, 1);
     }
 
-    private void Update()
+    void Update()
     {
         if (canMove)
         {
@@ -43,7 +45,7 @@ public class EnemyWizzMovement : MonoBehaviour
             animator.SetBool("isAttacking", false);
             return;
         }
-        if (!CheckTargetIsInRange())
+        if (!CheckTargetInRange())
         {
             target = null;
         }
@@ -64,40 +66,68 @@ public class EnemyWizzMovement : MonoBehaviour
         if (target == null) return;
 
         GameObject arrowObj = Instantiate(arrowPrefab, firingPoint.position, Quaternion.identity);
-        EnemyArrow arrowScript = arrowObj.GetComponent<EnemyArrow>();
+        Arrow arrowScript = arrowObj.GetComponent<Arrow>();
         arrowScript.SetTarget(target);
-    }
-
-    private bool CheckTargetIsInRange()
-    {
-        return target != null && Vector2.Distance(transform.position, target.position) <= targetingRange;
     }
 
     private void FindTarget()
     {
-        RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, targetingRange, Vector2.zero, 0f, enemyMask);
+        // Nejprve najde nejbližšího nepřítele
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, targetingRange, enemyMask);
 
-        if (hits.Length > 0)
+        float closestDistance = Mathf.Infinity;
+        Transform closestEnemy = null;
+
+        foreach (var enemy in enemies)
         {
-            target = hits[0].transform;
+            if (enemy.CompareTag("Enemy") || enemy.CompareTag("EnemyArcher"))
+            {
+                float distance = Vector2.Distance(transform.position, enemy.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestEnemy = enemy.transform;
+                }
+            }
         }
-        
+
+        if (closestEnemy != null)
+        {
+            target = closestEnemy;
+            return; // Útočí na nepřítele
+        }
+
+        //  Pokud není nepřítel, najde EnemyBase
+        GameObject baseObj = GameObject.FindGameObjectWithTag("EnemyBaseHP");
+        if (baseObj != null && Vector2.Distance(transform.position, baseObj.transform.position) <= targetingRange)
+        {
+            target = baseObj.transform; // Útočí na základnu
+        }
+        else
+        {
+            target = null;
+        }
+    }
+
+    private bool CheckTargetInRange()
+    {
+        return target != null && Vector2.Distance(transform.position, target.position) <= targetingRange;
     }
 
     private void Move()
     {
-        if (gameObject.CompareTag("EnemyArcher"))
+        if (gameObject.CompareTag("Archer"))
         {
-            transform.position += Vector3.left * Speed * Time.deltaTime;
+            transform.position += Vector3.right * Speed * Time.deltaTime;
             animator.SetBool("isRunning", true);
         }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if(collision.gameObject)
+        if (collision.gameObject)
         {
-            if(isInPlayerBase == false)
+            if (isInEnemyBase == false)
             {
                 canMove = true;
             }
@@ -115,23 +145,25 @@ public class EnemyWizzMovement : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("BaseHP"))
+        if (collision.CompareTag("EnemyBaseHP"))
         {
             canMove = false;
             animator.SetBool("isRunning", false);
-            isInPlayerBase = true;
+            isInEnemyBase = true;
 
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.CompareTag("BaseHP"))
+        if (collision.CompareTag("EnemyBaseHP"))
         {
-            isInPlayerBase = false;
-           
+            isInEnemyBase = false;
+            
         }
     }
+
+    
 
     public void TakeDamage(float dmg)
     {
@@ -145,8 +177,7 @@ public class EnemyWizzMovement : MonoBehaviour
     private void Die()
     {
         canMove = false;
-        Destroy(gameObject, 1f);
-        GameManager.Instance.AddGold(isPlayerUnit, gainCoin);
         animator.SetBool("isDead", true);
+        Destroy(gameObject, 1f);
     }
 }

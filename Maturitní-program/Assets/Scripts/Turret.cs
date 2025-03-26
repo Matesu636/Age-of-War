@@ -76,7 +76,7 @@ public class Turret : MonoBehaviour
     public void IncreaseDamage(float amount)
     {
         bulletDamage += amount;
-        Debug.Log("💥 Nové damage Turret: " + bulletDamage);
+        
     }
 
     public float GetDamage()

@@ -4,12 +4,12 @@ using UnityEngine;
 public class EnemyMove : MonoBehaviour
 {
     private Animator animator;
-    BoxCollider2D collision;
     private MonoBehaviour currentEnemy;
 
     public float Speed = 1f;
     private bool canMove = true;
     private bool isInEnemyBase = false;
+    private bool isDead = false;
 
     public bool isPlayerUnit;
     public float hpWarrior = 100;
@@ -87,9 +87,9 @@ public class EnemyMove : MonoBehaviour
         {
             CancelInvoke(nameof(AttackBase));
 
-            // Získání správného nepřítele (buď `Movement` nebo `WizzMovement`)
+            // Získá správného nepřítele (buď `Movement` nebo `WizzMovement`)
             Movement warrior = boxCollision2D.gameObject.GetComponent<Movement>();
-            WizzMovement archer = boxCollision2D.gameObject.GetComponent<WizzMovement>();
+            ArcherMovement archer = boxCollision2D.gameObject.GetComponent<ArcherMovement>();
 
             if (warrior != null)
             {
@@ -142,14 +142,14 @@ public class EnemyMove : MonoBehaviour
             {
                 warrior.TakeDamage(damage);
             }
-            else if (currentEnemy is WizzMovement archer)
+            else if (currentEnemy is ArcherMovement archer)
             {
                 archer.TakeDamage(damage);
             }
         }
         else
         {
-            CancelInvoke(nameof(RepeatDealDamage)); // Pokud nepřítel zmizí, zastav útoky
+            CancelInvoke(nameof(RepeatDealDamage)); // Pokud nepřítel zmizí, zastaví útoky
         }
     }
 
@@ -168,6 +168,9 @@ public class EnemyMove : MonoBehaviour
 
     public void Die()
     {
+        if (isDead) return; // Zabrání opakovanému volání
+        isDead = true;
+
         canMove = false;
         animator.SetBool("isDead", true); // Animace smrti
         Destroy(gameObject, 1f); // Zničí objekt po 1s

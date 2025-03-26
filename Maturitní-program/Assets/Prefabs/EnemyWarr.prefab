@@ -175,7 +175,7 @@ MonoBehaviour:
   Speed: 2
   isPlayerUnit: 0
   hpWarrior: 150
-  damage: 20
+  damage: 15
   gainCoin: 35
 --- !u!95 &2109778880219692635
 Animator:

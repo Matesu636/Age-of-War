@@ -31,7 +31,7 @@ public class EnemyArrow : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.transform != target) return; // 💥 pouze cíl, na který letím
+        if (collision.transform != target) return; // pouze cíl, na který letím
 
         Movement enemy = collision.gameObject.GetComponent<Movement>();
         if (enemy != null)
@@ -39,7 +39,7 @@ public class EnemyArrow : MonoBehaviour
 
             enemy.TakeDamage(arrowDamage);
         }
-        WizzMovement archer = collision.gameObject.GetComponent<WizzMovement>();
+        ArcherMovement archer = collision.gameObject.GetComponent<ArcherMovement>();
         if (archer != null)
         {
 

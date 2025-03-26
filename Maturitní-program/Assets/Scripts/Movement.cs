@@ -5,7 +5,6 @@ using UnityEngine;
 public class Movement : MonoBehaviour
 {
     private Animator animator;
-    private Rigidbody2D rb;
     private MonoBehaviour currentEnemy;
 
     public bool isPlayerUnit;
@@ -100,7 +99,7 @@ public class Movement : MonoBehaviour
 
             // Získání správného nepřítele 
             EnemyMove warrior = boxCollision2D.gameObject.GetComponent<EnemyMove>();
-            EnemyWizzMovement archer = boxCollision2D.gameObject.GetComponent<EnemyWizzMovement>();
+            EnemyArcherMovement archer = boxCollision2D.gameObject.GetComponent<EnemyArcherMovement>();
 
             if (warrior != null)
             {
@@ -158,7 +157,7 @@ public class Movement : MonoBehaviour
             {
                 warrior.TakeDamage(damage);
             }
-            else if (currentEnemy is EnemyWizzMovement archer)
+            else if (currentEnemy is EnemyArcherMovement archer)
             {
                 archer.TakeDamage(damage);
             }
