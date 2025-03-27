@@ -72,6 +72,8 @@ public class Turret : MonoBehaviour
         Quaternion targetRotation = Quaternion.Euler(new Vector3(0f, 0f, angle));
         rotationPoint.rotation = Quaternion.RotateTowards(rotationPoint.rotation, targetRotation, rotationSpeed * Time.deltaTime);
     }
+    //[1]
+
 
     public void IncreaseDamage(float amount)
     {
@@ -98,9 +100,6 @@ public class Turret : MonoBehaviour
             Debug.Log("Střela má správný cíl: " + target.name);
         }
     }
-
-    private void OnMouseDown()
-    {
-        Destroy(gameObject);
-    }
+    //[1]
+    
 }

@@ -25,7 +25,7 @@ public class CameraScript : MonoBehaviour
 
         Vector3 cameraMove = Vector3.zero;
 
-        // Podmínka: Kamera se pohybuje pouze, pokud je myš více než 50 px od horního okraje
+        //Kamera se pohybuje pouze, pokud je myš více než 50 px od horního okraje
         
         if (mouseY > screenHeight - yEdgeThreshold)
         {

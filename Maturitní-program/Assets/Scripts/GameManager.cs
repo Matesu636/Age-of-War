@@ -76,6 +76,7 @@ public class GameManager : MonoBehaviour
         float seconds = Mathf.FloorToInt(timeToDisplay % 60);
         textTime.text = string.Format("{0:00}:{1:00}", minutes, seconds);
     }
+    //[4]
 
     private void Awake()
     {
@@ -154,7 +155,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("❌ Nedostatek zlata nebo turret neexistuje!");
+            Debug.Log("Nedostatek zlata nebo turret neexistuje!");
         }
 
 

@@ -108,6 +108,8 @@ public class ArcherMovement : MonoBehaviour
             target = null;
         }
     }
+    //[2]
+
 
     private bool CheckTargetInRange()
     {

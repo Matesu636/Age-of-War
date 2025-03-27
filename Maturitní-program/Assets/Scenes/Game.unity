@@ -6376,7 +6376,7 @@ MonoBehaviour:
   textTime: {fileID: 517663302}
   timeIsRunning: 1
   timeRemaining: 0
-  PlayerGold: 180
+  PlayerGold: 280
   time: 0
 --- !u!4 &1635507505
 Transform:
