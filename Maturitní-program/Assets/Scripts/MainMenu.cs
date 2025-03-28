@@ -9,6 +9,7 @@ public class MainMenu : MonoBehaviour
     {
         SceneManager.LoadSceneAsync (1);
         PlayerPrefs.DeleteKey("SavedTime");
+        PlayerPrefs.DeleteKey("BasesDestroyed");
     }
 
     public void QuitGame()
